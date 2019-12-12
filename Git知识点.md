@@ -33,4 +33,4 @@ service sshd restart
 
 cat /root/.ssh/id_rsa.pub2 > /root/.ssh/authorized_key
 
-
+3，git专用gitkraken

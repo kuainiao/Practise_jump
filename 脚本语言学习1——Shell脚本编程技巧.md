@@ -276,6 +276,8 @@ yum clean all
 
 44，在CentOS 7上安装Node.js的4种方法：https://www.cmswing.com/p/407.html
 
+45，列出目录里面所有隐藏文件：ls -a
+
 *******************   12，yum下载本地依赖包
 yum install --downloadonly --downloaddir=/root/  boost-devel.x86_64
 rpm卸载：rpm -e 包名 --nodeps
@@ -294,7 +296,6 @@ yum安装rpm包不带公钥：yum install -y 包名 --nogpgcheck
 cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 cat ~/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
 chmod 600 /root/.ssh/authorized_keys
-
 
 ******************** 12，修改中文语言集
 vi /etc/locale.conf
@@ -454,3 +455,12 @@ date
 2，ssh速度优化：cat /etc/ssh/sshd_config | grep -v "#"
 UseDNS no
 GSSAPIAuthentication no
+
+3，shell四则运算和保留浮点数小数位：
+9，强转字符串为整型：#   pid=123  ;   pid=`echo ${pid}| awk '{print int($0)}'`
+
+10，shell四则运算计算1244/3*100浮点数保留2位小数的两种方法：
+[root@master ~]# echo "scale=4; 1244/3*100" | bc
+41466.6600
+[root@master ~]# awk 'BEGIN{printf "%.4f\n",('1244'/'3'*100)}' # 提倡awk，因为精确
+41466.6667

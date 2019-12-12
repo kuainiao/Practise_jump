@@ -9,19 +9,14 @@ systemctl start docker
 systemctl enable docker
 
 2，docker加速：
-创建daemon.json文件
-vi /etc/docker/daemon.json
-在文件内容加入：
+sudo mkdir -p /etc/docker
+cat >/etc/docker/daemon.json <<EOF
 {
-    "registry-mirrors": ["http://f1361db2.m.daocloud.io"]
+  "registry-mirrors": ["https://ot7dvptd.mirror.aliyuncs.com"]
 }
-重启docker
-systemctl daemon-reload
-systemctl restart docker
-执行下面的命令
-curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://f1361db2.m.daocloud.io
-重启docker服务
-service docker restart
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
 
 3，拉取k8s镜像
 docker pull luyanjie/kube-apiserver:v1.13.3
@@ -32,6 +27,11 @@ docker pull luyanjie/coredns:1.2.6
 docker pull luyanjie/etcd:3.2.24
 docker pull luyanjie/pause:3.1
 docker pull luyanjie/flannel:v0.11.0-amd64
+docker pull hyperledger/fabric-ca:1.4
+docker pull hyperledger/fabric-tools:1.4
+docker pull hyperledger/fabric-ccenv:latest
+docker pull hyperledger/fabric-orderer:1.4
+docker pull hyperledger/fabric-peer
 
 docker tag luyanjie/kube-apiserver:v1.13.3             k8s.gcr.io/kube-apiserver:v1.13.3         
 docker tag luyanjie/kube-controller-manager:v1.13.3    k8s.gcr.io/kube-controller-manager:v1.13.3
@@ -97,7 +97,7 @@ kubeadm join 192.168.50.44:6443 --token rr3740.se29f046hyb46qdp --discovery-toke
 wget https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
 kubectl apply -f  kube-flannel.yml
 
-
+K8S中文文档：https://kubernetes.io/zh/docs/tasks/administer-cluster/cpu-memory-limit/
 1，部署K8S集群：
 #首先生成密钥：
 openssl genrsa -out /etc/kubernetes/serviceaccount.key 2048
@@ -120,8 +120,8 @@ rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-std
 4，解决节点NotReady问题：vi编辑 /var/lib/kubelet/kubeadm-flags.env 文件去掉cni，重启kubectl
 systemctl daemon-reload
 systemctl restart kubelet
-5，查看某个POD的运行情况：kubectl describe pod istio-galley-55cb97dd76-9gzxn -n istio-system
-6，查看某个POD的日志：kubectl logs istio-galley-55cb97dd76-9gzxn -n istio-system
+5，查看某个POD的运行情况：kubectl describe pod ca-cbcc85ddc-zxrj6 -n org2
+6，查看某个POD的日志：kubectl logs peer0-org1-89bc7c46b-pdv64 -n org1
 7，创建一个POD：kubectl apply -f  kube-flannel.yml
 8，删除一个POD：kubectl delete pod istio-galley-55cb97dd76-9gzxn -n istio-system
 9，进入一个POD：kubectl exec -it cli-59d46f884-p5grk bash -n org1
@@ -131,35 +131,61 @@ systemctl restart kubelet
 13，查看k8s dns的IP：kubectl get svc -n kube-system  
 14，服务文件位于/usr/lib/systemd/system/docker.service,systemctl status docker
 15，连通k8s dns：kubectl get svc -n kube-system
-echo 'DOCKER_OPTS="--dns=10.96.0.10"' >> /etc/default/docker
+echo 'DOCKER_OPTS="--dns=10.96.0.10 --dns-search default.svc.cluster.local --dns-search svc.cluster.local --dns-opt ndots:2 --dns-opt timeout:2 --dns-opt attempts:2"' >> /etc/default/docker
 #echo 'EnvironmentFile=-/etc/default/docker' >> /etc/systemd/system/docker.service
 systemctl daemon-reload
 systemctl restart docker
 systemctl status docker
+16，重置所有POD：kubeadm reset
+17，设置默认StorageClass：vi StorageClass.yaml
+##############################
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: standard
+provisioner: kubernetes.io/aws-ebs
+parameters::wq
+  type: gp2
+reclaimPolicy: Retain
+allowVolumeExpansion: true
+mountOptions:
+  - debug
+volumeBindingMode: Immediate
+##############################
+kubectl apply -f StorageClass.yaml
+kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
-mkdir -p /data
-chmod 777  /data
 mkdir -p /opt/share
 chmod 777 /opt/share
 mkdir -p /opt/data
 chmod 777 /opt/data
+mkdir -p /data
+chmod 777 /data
 
-yum -y install nfs-utils rpcbind
-
-systemctl enable rpcbind.service    
+yum -y install nfs-utils
+ 
 systemctl enable nfs-server.service
-systemctl start rpcbind.service    
-systemctl start nfs-server.service
 
 cat << EOF > /etc/exports
-/opt/share       192.168.182.0/24(insecure,rw,sync,no_root_squash)
-/data            192.168.182.0/24(insecure,rw,sync,no_root_squash)
+/opt/share       192.168.50.0/24(rw,no_root_squash,async,insecure)
+/data            192.168.50.0/24(rw,no_root_squash,async,insecure)
 EOF
+ 
+systemctl start nfs-server.service
+
+mount -t nfs 192.168.50.44:/opt/share /opt/share
+mount -t nfs 192.168.50.44:/data /opt/data
+
+showmount -e 192.168.50.44
+
+mkdir -p /data/peer/org1
+mkdir -p /data/peer/org2
+mkdir -p /data/orderer/orgorderer1
 
 
-mount -t nfs 192.168.182.150:/opt/share /opt/share
-mount -t nfs 192.168.182.150:/data /opt/data
-
-showmount -e 192.168.182.150
-
-
+git clone https://github.com/batizhao/fabric-on-kubernetes.git
+cd fabric-on-kubernetes
+wget https://nexus.hyperledger.org/content/repositories/releases/org/hyperledger/fabric/hyperledger-fabric/darwin-amd64-1.2.0/hyperledger-fabric-darwin-amd64-1.2.0.tar.gz && tar -zxvf hyperledger-fabric-darwin-amd64-1.2.0.tar.gz && rm -rf hyperledger-fabric-darwin-amd64-1.2.0.tar.gz && rm -rf config
+yum -y install python3
+./generateALL.sh
+python3 transform/run.py

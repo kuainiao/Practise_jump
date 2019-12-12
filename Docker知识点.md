@@ -1,14 +1,33 @@
-0，安装docker
-rm -rf /etc/yum.repos.d/*.repo
-wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
-wget -O /etc/yum.repos.d/epel.repo http://mirrors.aliyun.com/repo/epel-7.repo
-sed -i '/aliyuncs/d' /etc/yum.repos.d/CentOS-Base.repo
-sed -i '/aliyuncs/d' /etc/yum.repos.d/epel.repo
-cat /etc/redhat-release
-sed -i 's/$releasever/7.6.1810/g' /etc/yum.repos.d/CentOS-Base.repo
-yum install docker      # yum安装docker
-systemctl start docker  # 启动docker服务
-systemctl enable docker # 添加开机启动
+https://www.jianshu.com/p/a024dc5ade92
+http://blog.chinaunix.net/uid-26168435-id-5736568.html
+
+1，安装Docker（K8s master和K8s node1执行）
+yum -y update
+yum install -y wget
+yum install -y yum-utils device-mapper-persistent-data lvm2
+cd /etc/yum.repos.d/
+yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum -y install docker-ce
+systemctl start docker
+systemctl enable docker
+
+2，docker加速：
+sudo mkdir -p /etc/docker
+cat >/etc/docker/daemon.json <<EOF
+{
+  "registry-mirrors": ["https://ot7dvptd.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+3，
+curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose --version
+
+docker-compose up
 
 查询Docker状态：docker info
 
@@ -140,3 +159,5 @@ docker inspect `nginx` | grep IPAddress  #  获取容器IP地址
 
 https://boxueio.com/series/docker-basics/ebook/418
 https://blog.csdn.net/qq_25406669/article/details/88339513
+
+25，docker可视化工具Portainer：https://cloud.tencent.com/developer/article/1371476
