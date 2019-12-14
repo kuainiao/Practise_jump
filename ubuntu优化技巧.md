@@ -31,3 +31,10 @@ apt-get install python3-pip
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple numpy==1.13.3
 pip install -i https://pypi.tuna.tsinghua.edu.cn/simple tensorflow
 
+mkdir -p ~/.pip/
+cat > ~/.pip/pip.conf << EOF
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+trusted-host = pypi.tuna.tsinghua.edu.cn
+EOF
