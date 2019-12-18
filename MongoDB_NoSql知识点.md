@@ -36,9 +36,9 @@ quiet=true
 
 3，查询前5行：db.col.find({},{url:1,title:1,_id:0}).limit(5);
 
-4，导出备份： mongodump -h 127.0.0.1:20000 -u zdhyw -d zdhyw -o /home/nfdw/
+4，导出备份： mongodump -h 127.0.0.1:20000 -u "useradmin2" -p "123456" -d dxdb -o /tmp/
 
-5，导入备份：/usr/local/mongodb/bin/mongorestore -h 127.0.0.1:27000 -d dxdb --dir /root/mongo20190905/
+5，导入备份：/usr/local/mongodb/bin/mongorestore -h 127.0.0.1:20000 -u "useradmin2" -p "123456" -d dxdb --dir /root/aomm
 
 6，创建管理员用户：
 use admin
@@ -53,10 +53,10 @@ db.auth("useradmin","123456")
 use admin
 db.auth("useradmin","123456")
 use my1
-db.createUser({user:"useradmin2",pwd:"123456",roles:[{role:"read",db:"my1"}]})
+db.createUser({user:"useradmin2",pwd:"123456",roles:[{role:"root",db:"dxdb"}]})
 
 8，带用户名密码登陆：
-/usr/local/mongodb/bin/mongo --port=20000 -u "useradmin" -p "123456" --authenticationDatabase "admin"
+/usr/local/mongodb/bin/mongo --port=20000 -u "useradmin2" -p "123456" --authenticationDatabase "admin"
 
 ################################
 Read：允许用户读取指定数据库

@@ -157,7 +157,13 @@ docker inspect `nginx` | grep IPAddress  #  获取容器IP地址
 
 24，docker添加
 
+25，查看docker日志：docker logs -f -t --tail=100 0faba38962c3
+
 https://boxueio.com/series/docker-basics/ebook/418
 https://blog.csdn.net/qq_25406669/article/details/88339513
 
 25，docker可视化工具Portainer：https://cloud.tencent.com/developer/article/1371476
+
+26，docker日志Id查询：docker inspect 容器id
+
+ 

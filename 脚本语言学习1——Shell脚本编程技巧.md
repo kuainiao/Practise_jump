@@ -358,18 +358,11 @@ yum clean all
 
 **********************  15，配置NFS：
 #  主机配置nfds临时挂载
-yum -y install nfs-utils rpcbind
-systemctl enable rpcbind.service    
-systemctl enable nfs-server.service
-systemctl start rpcbind.service    
-systemctl start nfs-server.service
-cat << EOF > /etc/exports
-/opt/share       192.168.182.0/24(insecure,rw,sync,no_root_squash)
-/data            192.168.182.0/24(insecure,rw,sync,no_root_squash)
+yum install nfs-utils   # 安装nfs权限
+cat >> /etc/exports << EOF
+/data/soft/ 192.168.240.113 (rw,no_root_squash,async)
 EOF
-mount -t nfs 192.168.182.150:/opt/share /opt/share
-mount -t nfs 192.168.182.150:/data /opt/data
-showmount -e 192.168.182.150
+service nfs start
 
 #  从机临时挂载
 mkdir -p /tmp/soft
@@ -378,7 +371,7 @@ cp -r /tmp/soft/jdk-8u152-linux-x64.rpm /data/soft/
 umount /tmp/soft
 
 # 主机删除nfds临时挂载
-sed -i -e '/${job_ip_list}/d' /etc/exports
+sed -i -e '/192.168.240.113/d' /etc/exports
 service nfs restart
 
 **********************  Redhat系统去掉yum注册
@@ -464,3 +457,5 @@ GSSAPIAuthentication no
 41466.6600
 [root@master ~]# awk 'BEGIN{printf "%.4f\n",('1244'/'3'*100)}' # 提倡awk，因为精确
 41466.6667
+
+awk取第三列：awk '{printf $3}'

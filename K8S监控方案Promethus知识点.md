@@ -44,7 +44,8 @@ cp -r ./consoles /etc/prometheus
 cp -r ./console_libraries /etc/prometheus
 chown -R prometheus:prometheus /etc/prometheus/consoles
 chown -R prometheus:prometheus /etc/prometheus/console_libraries
-cat > /etc/prometheus/prometheus.yml << EOF
+±à¼­ /etc/prometheus/prometheus.yml 
+#################################
 global:
   scrape_interval:     15s
   evaluation_interval: 15s
@@ -52,18 +53,11 @@ global:
 rule_files:
 
 scrape_configs:
-- job_name: 'prometheus'
-  scrape_interval: 5s
-  static_configs:
-    - targets: 
-	  - localhost:9090
-	  
-- job_name: 'node_exporter'
-  scrape_interval: 5s
-  static_configs:
-    - targets: 
-	  - localhost:9100
-EOF
+  - job_name: 'prometheus'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:9090']
+#################################
 chown prometheus:prometheus /etc/prometheus/prometheus.yml
 
 sudo -u prometheus /usr/local/bin/prometheus --config.file /etc/prometheus/prometheus.yml --storage.tsdb.path /var/lib/prometheus/ --web.console.templates=/etc/prometheus/consoles --web.console.libraries=/etc/prometheus/console_libraries
