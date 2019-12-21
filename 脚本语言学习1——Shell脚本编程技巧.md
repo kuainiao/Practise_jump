@@ -361,6 +361,7 @@ yum clean all
 yum install nfs-utils   # 安装nfs权限
 cat >> /etc/exports << EOF
 /data/soft/ 192.168.240.113 (rw,no_root_squash,async)
+*(rw,no_root_squash,async,insecure)代表所有主机
 EOF
 service nfs start
 
@@ -370,6 +371,9 @@ mount -t nfs 192.168.240.113:/data/soft/ /tmp/soft
 cp -r /tmp/soft/jdk-8u152-linux-x64.rpm /data/soft/
 umount /tmp/soft
 
+#  主机强行卸载nfs
+umount -l /tmp/soft
+
 # 主机删除nfds临时挂载
 sed -i -e '/192.168.240.113/d' /etc/exports
 service nfs restart
@@ -377,6 +381,17 @@ service nfs restart
 **********************  Redhat系统去掉yum注册
 
 vim /etc/yum/pluginconf.d/subscription-manager.conf
+
+yum安装rpm依赖包 ： yum -y install xxxx.rpm
+
+vim 快速到最后一行:   :$
+
+开机启动服务：systemctl enable docker
+开机启动服务：chmod 755 /etc/init.d/mysql​
+​chkconfig --add mysql
+​chkconfig --level 2345 mysql on
+
+
 
 **********************  16，CentOS初始优化
 vi /etc/sysconfig/network-scripts/ifcfg-enp0s3
@@ -433,7 +448,7 @@ net.core.netdev_max_backlog = 16384
 net.ipv4.tcp_max_orphans = 16384
 EOF
 sysctl -p
-# 时间同步：
+# ntp时间同步：
 yum install -y ntpdate
 cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
@@ -443,6 +458,12 @@ echo "10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/cron
 crontab /tmp/crontab.bak
 date
 
+# 添加定时任务
+crontab -e
+* * * * * /usr/sbin/ntpdate us.pool.ntp.org    # 分，时 ，日，周，月
+
+# 给用户授权某个目录
+chown -R mysql:mysql /var/lib/mysql/
 
 1，bind_ip 为 0.0.0.0 才能外部访问
 2，ssh速度优化：cat /etc/ssh/sshd_config | grep -v "#"
@@ -458,4 +479,22 @@ GSSAPIAuthentication no
 [root@master ~]# awk 'BEGIN{printf "%.4f\n",('1244'/'3'*100)}' # 提倡awk，因为精确
 41466.6667
 
-awk取第三列：awk '{printf $3}'
+awk分割取第三列：awk '{printf $3}'
+
+11，时间修正
+yum install -y ntpdate
+yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ntpdate us.pool.ntp.org
+date
+crontab -l >/tmp/crontab.bak
+echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
+crontab /tmp/crontab.bak
+
+
+vi /etc/mail.rc
+set from=1290851757@qq.com
+set smtp=smtp.qq.com
+set smtp-auth-user=1290851757@qq.com
+set smtp-auth-password=junvnvxgqlmiiibf
+set smtp-auth=login
+

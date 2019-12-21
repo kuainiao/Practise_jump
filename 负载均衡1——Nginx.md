@@ -6,10 +6,10 @@ userdel www
 groupdel www
 groupadd -f www
 useradd -g www www
-tar zxvf /data/soft/pcre-8.38.tar.gz -C /data/ioszdhyw/soft
-tar zxvf /data/soft/nginx-1.12.2.tar.gz -C /data/ioszdhyw/soft
-cd  /data/ioszdhyw/soft/`echo /data/soft/nginx-1.12.2.tar.gz |awk 'BEGIN{FS="/"}''{print $NF}'| awk -F".tar" '{print $NR}'`
-./configure --user=www --group=www --prefix=/data/ioszdhyw/soft/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module --with-pcre=/data/ioszdhyw/soft/pcre-8.38/ --with-pcre-jit
+tar zxvf pcre-8.38.tar.gz -C /usr/local/
+tar zxvf nginx-1.14.2.tar.gz -C /usr/local/
+cd  /usr/local/nginx-1.14.2/
+./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module --with-pcre=/usr/local/pcre-8.38/ --with-pcre-jit
 make && make install
 
 vi /usr/local/nginx/conf/nginx.conf 
@@ -51,14 +51,54 @@ server {
  location / {  
          proxy_pass  http://localhost:8080/;
         }
-4，负载均衡
+		
+4，负载均衡(轮询、权重weight、IP hash)
+http {
 upstream task_api{
         ip_hash;  
         server 127.0.0.1:1001;
         server 127.0.0.1:1002;
     }
+.......
+server {
+        listen       80;
+        server_name  192.168.240.114;
+        location / {
+            root   html;
+            index  index.html index.htm;
+            proxy_pass http://task_api;
+         }
+.......
+curl http://127.0.0.1/
 
-curl http://127.0.0.1/api
+5, Nginx平滑重启
+./nginx -s reload
+
+6，Nginx制定配置文件启动：
+./sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+
+7，判断配置文件是否有错：
+nginx -t -c /usr/nginx/conf/nginx.conf
+
+8，地址重定向：
+location / {  
+        rewrite ^/(.*) http://www.baidu.com;
+       }
+
+9，设计防盗链：
+location ~* \.(gif|jpg|png|swf|flv)$ {
+valid_referers none blocked http://www.jefflei.com/ http://www.leizhenfang.com/;
+if ($invalid_referer) {
+return 404;
+}
+}
 
 
 
+
+高并发系统流量削峰策略
+如何把缓存银弹无限前置提高响应速度
+服务集群化nginx、lvs、haproxy怎么选
+服务静态化，文件治理与集群同步
+nginx+lua静态资源补偿机制
+定向流量分发遇到热点数据降级机制

@@ -80,6 +80,10 @@ EOF
 docker build -t="luyanjie/test:v3" .
 
 9，限制docker容器资源：
+查看容器使用情况：docker stats
+限制CPU：--cpus=2 
+指定CPU：--cpuset-cpus="1,3"
+限制内存：-m 300M 
 
 10，docker加速：
 创建daemon.json文件
@@ -127,9 +131,9 @@ docker import 容器名.tar 镜像名称:tag名称
 docker pull smebberson/alpine-nginx
 docker pull sickp/alpine-redis
 
-17，初次进入容器：
-一般Linux：docker run -it 镜像名 /bin/bash
-登陆alpine：docker run -it 镜像名 sh
+17，初次进入容器（-d 表示在后台运行容器，-it交互式运行）：
+一般Linux：docker run --name ubuntu_me -dit ubuntu /bin/bash
+登陆alpine：docker run -dit 镜像名 sh
 
 18，重新进入容器：
 登陆alpine：docker exec -it CONTAINER_ID sh
@@ -143,7 +147,7 @@ docker pull nginx
 docker run -p 8888:80  --name=nginx -i -t 540a289bab6c
 
 21，目录映射：
-docker run -p 8888:80  --name=nginx -i -t -v /home/test/nginx/html:/usr/share/nginx/html 540a289bab6c 
+docker run -p 8888:80 -p 8881:81 --name=nginx -i -t -v /home/test/nginx/html:/usr/share/nginx/html 540a289bab6c 
 
 22，运行中的容器添加端口映射：
 docker inspect `nginx` | grep IPAddress  #  获取容器IP地址
@@ -155,9 +159,11 @@ iptables -t nat -D DOCKER 3
 
 docker inspect `nginx` | grep IPAddress  #  获取容器IP地址
 
-24，docker添加
+24，docker添加dns解析
+kubectl get svc -n kube-system
+echo 'DOCKER_OPTS="--dns=10.96.0.10 --dns-search default.svc.cluster.local --dns-search svc.cluster.local --dns-opt ndots:2 --dns-opt timeout:2 --dns-opt attempts:2"' >> /etc/default/docker
 
-25，查看docker日志：docker logs -f -t --tail=100 0faba38962c3
+25，实时查看docker日志：docker logs -f -t --tail=100 0faba38962c3
 
 https://boxueio.com/series/docker-basics/ebook/418
 https://blog.csdn.net/qq_25406669/article/details/88339513
@@ -165,5 +171,18 @@ https://blog.csdn.net/qq_25406669/article/details/88339513
 25，docker可视化工具Portainer：https://cloud.tencent.com/developer/article/1371476
 
 26，docker日志Id查询：docker inspect 容器id
+
+27，docekrfile构建运行容器：
+docker-compose build 
+docker-compose up -d # 作用是创建与启动容器，会重建有变化的服务器（删掉以前建立的容器）
+
+28，docker容器目录映射到本地目录（容器目录为/tmp/caffe/ 本地目录为/root/caffe/，必须是绝对路径）
+docker run --name caffe -it -v /root/caffe/:/tmp/caffe/ ubuntu:latest --name caffe
+创建数据卷:
+docker run -v /root/caffe/:/tmp/caffe/ --name dataVol ubuntu:latest /bin/bash
+docker run -it --volumes-from dataVol ubuntu:latest /bin/bash
+
+29，容器可以访问外网
+sysctl -w net.ipv4.ip_forward=1
 
  

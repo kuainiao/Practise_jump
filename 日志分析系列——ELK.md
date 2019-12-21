@@ -95,5 +95,22 @@ filebeat.prospectors:
   enabled: true
   paths:
     - /var/log/*.log
+output.logstash:
+  hosts: ["localhost:5044"]
 ############################################
 nohup /usr/local/filebeat-6.7.2-linux-x86_64/filebeat -e -c /usr/local/filebeat-6.7.2-linux-x86_64/filebeat.yml -d "publish" > filebeat.log &
+
+1，一般没出日志都是filebeat没配置好logstash，或是elsasearch、logstash状态有问题，或是配置文件错误导致
+2，一般日志找不到有可能是时间戳无法分隔的问题
+3，Docker目录位置：- /var/new_lib/docker/containers/*/*-json.log
+4，服务器时间与真实时间不一致
+
+时间修正：
+#######################
+yum install -y ntpdate
+yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ntpdate us.pool.ntp.org
+crontab -l >/tmp/crontab.bak
+echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
+crontab /tmp/crontab.bak
+#######################
