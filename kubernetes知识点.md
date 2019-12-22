@@ -3,7 +3,7 @@ yum -y update
 yum install -y wget
 yum install -y yum-utils device-mapper-persistent-data lvm2
 cd /etc/yum.repos.d/
-yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 yum -y install docker-ce
 systemctl start docker
 systemctl enable docker
@@ -55,25 +55,20 @@ EOF
 yum list --showduplicates | grep 'kubeadm\|kubectl\|kubelet'
 
 [root@c0 ~]# yum install -y kubernetes-cni-0.6.0 kubelet-1.13.3 kubeadm-1.13.3 kubectl-1.13.3 --disableexcludes=kubernetes
-
-[root@c0 ~]# systemctl enable kubelet
-[root@c0 ~]# systemctl start kubelet
-
 hostnamectl set-hostname master  
 
 hostnamectl set-hostname node1
 
 echo 1 > /proc/sys/net/bridge/bridge-nf-call-iptables
 echo 1 > /proc/sys/net/ipv4/ip_forward contents
-
 swapoff -a
 vi /etc/fstab
 注释swap分区
 # /dev/mapper/centos-swap swap                    swap    defaults        0 0
 
-
 kubeadm init --kubernetes-version=v1.13.3 --pod-network-cidr=10.244.0.0/16 --ignore-preflight-errors=NumCPU
-
+[root@c0 ~]# systemctl enable kubelet
+[root@c0 ~]# systemctl start kubelet
 
 vi /var/lib/kubelet/kubeadm-flags.env
 去掉cni
