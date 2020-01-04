@@ -1,47 +1,112 @@
-yum remove zabbix-release
-yum install http://repo.zabbix.com/zabbix/3.2/rhel/6/x86_64/zabbix-release-3.2-1.el6.noarch.rpm
-yum clean all
+yum install -y wget net-tools
+yum install -y httpd mariadb-server mariadb php php-mysql php-gd libjpeg* php-ldap php-odbc php-pear php-xml php-xmlrpc php-mhash php-mbstring php-bcmath
+vi /etc/httpd/conf/httpd.conf
+#######################################
+<IfModule dir_module>
+    DirectoryIndex index.html index.php
+</IfModule>
+#######################################
 
-yum install -y zabbix-server-mysql zabbix-web-mysql
-yum install -y zabbix-agent
+vi /etc/php.ini
+#######################################
+[Date]
+date.timezone = PRC
+#######################################
 
-# wget http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
-# rpm -ivh mysql-community-release-el7-5.noarch.rpm
-yum repolist enabled | grep "mysql.*-community.*"
-yum install mysql-community-server -y
-systemctl enable mysqld
-systemctl start mysqld
+systemctl stop firewalld.service
+setenforce 0
+systemctl start httpd.service
+systemctl start mariadb.service
 
-mysql -uroot -p
-############################################################################################
-create database zabbix character set utf8 collate utf8_bin;
-grant all privileges on zabbix.* to zabbix@localhost identified by 'zabbix';
+mysql_secure_installation
+
+mysql -u root -p
+#######################################
+CREATE DATABASE zabbix character set utf8 collate utf8_bin;
+GRANT all ON zabbix.* TO 'zabbix'@'%' IDENTIFIED BY 'qwer1234';
 flush privileges;
-############################################################################################
+#######################################
 
-cd /usr/share/doc/zabbix-server-mysql-3.2.11/
-zcat create.sql.gz | mysql -uzabbix -pzabbix -b zabbix
+rpm -ivh https://mirrors.tuna.tsinghua.edu.cn/zabbix/zabbix/4.0/rhel/7/x86_64/zabbix-release-3.5-1.el7.noarch.rpm
 
-vim /etc/zabbix/zabbix_server.conf
-############################################################################################
-DBHost=localhost
+yum install zabbix-server-mysql zabbix-web-mysql -y
+
+zcat /usr/share/doc/zabbix-server-mysql-4.0.0/create.sql.gz | mysql -uzabbix -p -h 127.0.0.1 zabbix  
+
+cat >> /etc/zabbix/zabbix_server.conf << EOF
+LogFile=/var/log/zabbix/zabbix_server.log
+LogFileSize=0
+PidFile=/var/run/zabbix/zabbix_server.pid
+SocketDir=/var/run/zabbix
 DBName=zabbix
 DBUser=zabbix
-DBPassword=zabbix
-############################################################################################
-systemctl start zabbix-server
+DBPassword=qwer1234
+SNMPTrapperFile=/var/log/snmptrap/snmptrap.log
+Timeout=4
+AlertScriptsPath=/usr/lib/zabbix/alertscripts
+ExternalScripts=/usr/lib/zabbix/externalscripts
+LogSlowQueries=3000
+EOF
+
+
+cat >> /etc/httpd/conf.d/zabbix.conf << EOF
+Alias /zabbix /usr/share/zabbix
+<Directory "/usr/share/zabbix">
+    Options FollowSymLinks
+    AllowOverride None
+    Require all granted
+    <IfModule mod_php5.c>
+        php_value max_execution_time 300
+        php_value memory_limit 128M
+        php_value post_max_size 16M
+        php_value upload_max_filesize 2M
+        php_value max_input_time 300
+        php_value max_input_vars 10000
+        php_value always_populate_raw_post_data -1
+        php_value date.timezone Asia/Shanghai
+    </IfModule>
+</Directory>
+<Directory "/usr/share/zabbix/conf">
+    Require all denied
+</Directory>
+<Directory "/usr/share/zabbix/app">
+    Require all denied
+</Directory>
+<Directory "/usr/share/zabbix/include">
+    Require all denied
+</Directory>
+<Directory "/usr/share/zabbix/local">
+    Require all denied
+</Directory>
+EOF
+
 systemctl enable zabbix-server
-systemctl start zabbix-agent
-systemctl enable zabbix-agent
+systemctl start zabbix-server
 
-vim /etc/httpd/conf.d/zabbix.conf
-############################################################################################
-php_value date.timezone Asia/Shanghai
-############################################################################################
-systemctl enable httpd
-systemctl start httpd
+netstat -lnpt | grep zabbix 
 
-# 访问 http://118.89.23.220/zabbix，账号：admin，密码：zabbix
+systemctl restart httpd.service
+
+rpm -ivh http://repo.zabbix.com/zabbix/3.5/rhel/7/x86_64/zabbix-release-3.5-1.el7.noarch.rpm
+yum install -y zabbix-agent
+cat >> /etc/zabbix/zabbix_agentd.conf << EOF
+PidFile=/var/run/zabbix/zabbix_agentd.pid
+LogFile=/var/log/zabbix/zabbix_agentd.log
+LogFileSize=0
+Server=127.0.0.1
+ServerActive=127.0.0.1
+Hostname=Zabbix server
+Include=/etc/zabbix/zabbix_agentd.d/*.conf
+EOF
+service firewalld stop
+setenforce 0
+systemctl enable zabbix-agent.service
+systemctl restart zabbix-agent.service
+netstat -anpt | grep zabbix
+
+
+
+# 访问 http://118.89.23.220/zabbix，账号：Admin，密码：zabbix
 
 
 参考笔记：https://blog.imdst.com/zabbix-jian-kong-tian-jia-jian-kong-fu-wu-qi/

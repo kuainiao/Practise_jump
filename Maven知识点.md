@@ -21,6 +21,23 @@ tags: 管理工具
  　[maven下载地址](https://mirrors.tuna.tsinghua.edu.cn/apache/maven/)
 
 ```     
+
+首先安装jdk环境
+#############################################################
+rpm -ivh jdk-8u202-linux-x64.rpm
+pid="sed -i '/export JAVA_HOME/d' /etc/profile"
+eval $pid
+pid="sed -i '/export CLASSPATH/d' /etc/profile"
+eval $pid
+cat >> /etc/profile <<EOF
+export JAVA_HOME=/usr/java/jdk1.8.0_202-amd64
+export CLASSPATH=%JAVA_HOME%/lib:%JAVA_HOME%/jre/lib
+export PATH=\$PATH:\$JAVA_HOME/bin
+EOF
+source /etc/profile
+java -version
+#############################################################
+
 $ wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
 $ tar -xzvf apache-maven-3.6.2-bin.tar.gz -C /usr/local
 $ mv /usr/local/apache-maven-3.6.2/ /usr/local/maven/

@@ -160,12 +160,18 @@ ceph-fuse -m 192.168.182.155:6789 /cephfs
 
 # admin节点执行
 su - cephuser
-ceph-deploy rgw create ceph-node1
+ceph-deploy rgw create ceph-admin
 
 # admin节点执行
 su - cephuser
-radosgw-admin user create --uid=guangzhou2 --display-name="guangzhou2" -- tenant guangzhou2  --email=guangzhou2@example.comradosgw-admin caps add --uid=guangzhou2 --caps="users=full_control"
+# admin节点创建完全权限用户
+radosgw-admin user create --uid=zongbu --display-name="zongbu" -- tenant zongbu  --email=zongbu@example.com
 radosgw-admin caps add --uid=guangzhou2 --caps="users=full_control"
+# uid 指定用户id，必须要唯一
+# display-name指定显示名称
+# tenant 指定租户区域名称，必须要加，否则会出现桶名称重复错误，必须要唯一
+# email必须要唯一
+！！！记录access_key和secret_key
 
 # 安装aws s3cmd工具
 su -
@@ -201,10 +207,9 @@ ceph-deploy --overwrite-conf config push node4
 # admin节点执行
 ceph-deploy rgw create ceph-node1
 
-# ceph-node1节点执行
-radosgw-admin user create --uid=guangzhou2 --display-name="guangzhou2" --email=guangzhou@example.com
-radosgw-admin caps add --uid=guangzhou2 --caps="users=full_control"
-radosgw-admin caps add --uid=guangzhou2 --caps="usage=full_control"
+# ceph-admin节点执行
+radosgw-admin user create --uid=zongbu --display-name="zongbu" -- tenant zongbu  --email=zongbu@example.com
+radosgw-admin caps add --uid=zongbu --caps="users=full_control"
 
 3，删除用户
 radosgw-admin key rm --uid=ioszdhyw

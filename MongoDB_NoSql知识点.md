@@ -30,6 +30,8 @@ logappend=true
 journal=true
 quiet=true
 
+列出所有数据：show dbs
+
 1，查询当前mongoDB版本：db.version();
 
 2，所有特定行：db.col.find({},{url:1,title:1,_id:0}): # 0代表不显示,1代表显示，默认不显示
@@ -71,8 +73,9 @@ dbAdminAnyDatabase：只在admin数据库中可用，赋予用户所有数据库
 root：只在admin数据库中可用。超级账号，超级权限
 ################################
 
-8，插入文档：use my1
+8，插入文档：use test
 db.col.insert({title:'MongoDB',description: 'MongoDB Nosql',url:'http://www.runoob.com',likes: 100})
+db.court_info.insert({title:'MongoDB',description: 'MongoDB Nosql',url:'http://www.runoob.com',likes: 100},WriteConcern.SAFE)
 
 9，列出已创建用户：show users
 
@@ -94,4 +97,15 @@ db.getCollection('cc_ObjectBase').aggregate([
 11，查询第2-6条数据
 db.getCollection('cc_HostBase').find({}).limit(5).skip(1)
 
-12，
+12，复制集合
+use wenshu_clean_db;
+db.court_info.find().forEach(function(x){db.court_info22.insert(x)})
+
+13，导出集合
+mongoexport -h localhost:27017 -d wenshu_clean_db -c court_info -o court_info.json
+14，导入集合
+mongoimport -h localhost:27017 -d wenshu_clean_db -c court_info2 court_info.json
+15，查看集合是否分片
+use db_source
+db.court_info.stats().sharded
+16，

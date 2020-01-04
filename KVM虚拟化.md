@@ -16,3 +16,10 @@ virsh console 3
 virsh shutdown centos701  #  
 
 # KVM常见故障排查： https://blog.51cto.com/13475644/2365470
+
+# Ubuntu KVM装安卓：
+sudo apt-get update
+sudo apt-get install qemu qemu-kvm libvirt-bin
+mkdir -p /kvmdir
+qemu-img create -f qcow2 /kvmdir/android.img 15G
+qemu-system-x86_64 -m 3048 -boot d -enable-kvm -smp 3 -net nic -net user -hda android.img -cdrom /home/mhsabbagh/android-x86_64-8.1-r1.iso

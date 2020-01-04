@@ -118,7 +118,7 @@ systemctl restart kubelet
 5，查看某个POD的运行情况：kubectl describe pod ca-cbcc85ddc-zxrj6 -n org2
 6，查看某个POD的日志：kubectl logs peer0-org1-89bc7c46b-pdv64 -n org1
 7，创建一个POD：kubectl apply -f  kube-flannel.yml
-8，删除一个POD：kubectl delete pod istio-galley-55cb97dd76-9gzxn -n istio-system
+8，删除一个POD：kubectl delete pod naftis-mysql-test -n naftis
 9，进入一个POD：kubectl exec -it cli-59d46f884-p5grk bash -n org1
 10,无法在master节点部署POD：kubectl taint nodes --all node-role.kubernetes.io/master-
 11，进入Alpine容器：docker exec -it CONTAINER_ID sh
@@ -149,6 +149,14 @@ volumeBindingMode: Immediate
 ##############################
 kubectl apply -f StorageClass.yaml
 kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+20,获取主机节点证书和token：
+##############################
+kubeadm token create
+kubeadm token list
+openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+kubeadm join 192.168.50.64:6443 --token pl3gg8.mrwivg0sph8jcrw1 --discovery-token-ca-cert-hash sha256:2626ecad67aa55dcdf5f26ca42d1eba0147af5be6fc8905af92af7e6150d693e
+##############################
 
 mkdir -p /opt/share
 chmod 777 /opt/share

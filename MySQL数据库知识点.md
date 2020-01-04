@@ -85,3 +85,16 @@ delete from tablename where id=0;
 # 19，删除有外键约束的数据
 SET FOREIGN_KEY_CHECKS=0;  #  禁用外键约束
 SET FOREIGN_KEY_CHECKS=1; #  启动外键约束
+# 20，重置密码：
+#编辑mysql配置文件/etc/my.cnf,添加"skip-grant-tables"
+/etc/init.d/mysql restart
+#连接mysql，直接回车即可，不需要输入密码
+mysql -u root -p
+#更新root用户密码
+update mysql.user set authentication_string=password('yellowcong') where user='root' and Host = 'localhost';
+#刷新权限
+flush privileges;
+#推出mysql
+exit 
+
+# 扩容分布式云数据库：https://cloud.google.com/spanner/?hl=zh-cn

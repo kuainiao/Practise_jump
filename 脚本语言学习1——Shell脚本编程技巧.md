@@ -151,6 +151,12 @@ do
     echo  ${str:$i:1}
 done
 
+遍历数组：
+dba_user="";
+for(( i=0;i<${#text[@]};i++)) do
+dba_user=$dba_user','${text[i]}
+done;
+
 24，判断字符串是否一致： #
 str1="abc"
 if [ $str1 != "abc" ]
@@ -252,6 +258,8 @@ ps -aux | grep httpd | grep -v grep | cut -c 7-15 | xargs kill -9 或 pkill -9 j
 
 43，查看当前目录占用大的文件：du -sh
 
+Linux时间格式化输出：date "+%Y-%m-%d %H:%M:%S"
+
 44，本地挂载iso镜像到/mnt做yum源：
 cat> /etc/yum.repos.d/Server.repo <<EOF
 [Server]
@@ -292,10 +300,25 @@ yum安装rpm包不带公钥：yum install -y 包名 --nogpgcheck
 
 46，grep正则排除注释行和空行：grep -Ev '^$|#' /etc/ssh/sshd_config
 
-47，配置ssh免密登陆：ssh-keygen -t rsa -P ''
-cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
-cat ~/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys
+47，配置ssh免密登陆：ssh-keygen -t rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub  user@host
 chmod 600 /root/.ssh/authorized_keys
+chmod 700 /home/luyanjie
+
+48，格式化输出日期：
+date "+%Y%m%d%H%M%S"
+
+49，报nolog错误                                                                            
+cat /etc/passwd 改成 /bin/bash_profile
+
+50，host阻止其他主机登陆 /etc/host.deny
+all:10.92.*.*:aloow
+
+51，iptables防火墙规则：
+
+52，firewalld防火墙规则：
+
+53，selinux防火墙规则：                        
 
 ******************** 12，修改中文语言集
 vi /etc/locale.conf
@@ -378,6 +401,12 @@ umount -l /tmp/soft
 sed -i -e '/192.168.240.113/d' /etc/exports
 service nfs restart
 
+# 
+dba_user="";
+for(( i=0;i<${#text[@]};i++)) do
+dba_user=$dba_user','${text[i]}
+done;
+
 **********************  Redhat系统去掉yum注册
 
 vim /etc/yum/pluginconf.d/subscription-manager.conf
@@ -457,6 +486,9 @@ crontab -l >/tmp/crontab.bak
 echo "10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
 crontab /tmp/crontab.bak
 date
+
+# 获取ntp时间服务偏差：
+ntpdate -q us.pool.ntp.org | grep "offset*.*sec"|awk '{print $(NF-1)}'|head -1
 
 # 添加定时任务
 crontab -e
