@@ -24,6 +24,7 @@ tags: 管理工具
 
 首先安装jdk环境
 #############################################################
+wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.rpm
 rpm -ivh jdk-8u202-linux-x64.rpm
 pid="sed -i '/export JAVA_HOME/d' /etc/profile"
 eval $pid
@@ -38,9 +39,9 @@ source /etc/profile
 java -version
 #############################################################
 
-$ wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.6.2/binaries/apache-maven-3.6.2-bin.tar.gz
-$ tar -xzvf apache-maven-3.6.2-bin.tar.gz -C /usr/local
-$ mv /usr/local/apache-maven-3.6.2/ /usr/local/maven/
+$ wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
+$ tar -xzvf apache-maven-3.3.9-bin.tar.gz -C /usr/local
+$ mv /usr/local/apache-maven-3.3.9/ /usr/local/maven/
 
 $ vi /etc/profile
 MAVEN_HOME=/usr/local/maven

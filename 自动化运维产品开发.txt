@@ -1,0 +1,26 @@
+1，安装宝塔：yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_6.0.sh && bash install.sh
+2，参考平台：
+（采用）https://github.com/welliamcao/OpsManage（https://www.anonym0x1.com/opsmanage/422.html）
+https://github.com/opendevops-cn/opendevops
+https://github.com/guohongze/adminset
+
+在线代码编辑js控件ace_editor：https://github.com/ajaxorg/ace-builds
+
+3，
+监控报表：https://blog.csdn.net/u011781521/article/details/82284449
+          https://echarts.apache.org/examples/zh/editor.html?c=line-aqi
+		  https://www.highcharts.com/demo/dynamic-update
+
+python3 manage.py makemigrations wiki
+python3 manage.py makemigrations orders
+python3 manage.py makemigrations filemanage
+python3 manage.py makemigrations navbar
+python3 manage.py makemigrations databases
+python3 manage.py makemigrations asset
+python3 manage.py makemigrations deploy
+python3 manage.py makemigrations cicd
+python3 manage.py makemigrations sched
+python3 manage.py makemigrations apply
+python3 manage.py migrate
+python3 manage.py createsuperuser
+

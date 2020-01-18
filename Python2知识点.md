@@ -37,4 +37,4 @@ python -m pip install --upgrade pip
 16，python查看函数用法：help(psutil.Popen)
 17，python获取某个进程信息：process=psutil.Process(PID)
 18，pthon遍历list： for pid in pids:
-19，python遍历
+19，python遍历：for listname in listss :  print listname

@@ -38,6 +38,7 @@ LogFile=/var/log/zabbix/zabbix_server.log
 LogFileSize=0
 PidFile=/var/run/zabbix/zabbix_server.pid
 SocketDir=/var/run/zabbix
+DBHost=127.0.0.1
 DBName=zabbix
 DBUser=zabbix
 DBPassword=qwer1234

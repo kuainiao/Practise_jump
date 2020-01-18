@@ -6,7 +6,7 @@ yum -y update
 yum install -y wget
 yum install -y yum-utils device-mapper-persistent-data lvm2
 cd /etc/yum.repos.d/
-yum-config-manager --add-repo http://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 yum -y install docker-ce
 systemctl start docker
 systemctl enable docker
@@ -185,4 +185,11 @@ docker run -it --volumes-from dataVol ubuntu:latest /bin/bash
 29，容器可以访问外网
 sysctl -w net.ipv4.ip_forward=1
 
- 
+30，卸载Docker：
+systemctl stop docker
+rpm -qa|grep docker
+rpm -e docker-client-1.13.1-103.git7f2769b.el7.centos.x86_64  --nodeps
+rpm -e docker-common-1.13.1-103.git7f2769b.el7.centos.x86_64  --nodeps
+rpm -e docker-1.13.1-103.git7f2769b.el7.centos.x86_64         --nodeps
+rm -rf /var/lib/docker
+

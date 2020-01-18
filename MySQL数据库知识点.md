@@ -43,10 +43,7 @@ EOF
 source /etc/profile
 
 
-/usr/local/mysql/bin/mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
-/etc/init.d/mysql start
-mysql_password="123456"
-echo "set password=password('${mysql_password}');"| mysql -S /tmp/mysql.sock
+
 
 # 1，非交互式命令创建dog用户：mysql -h127.0.0.1 -P3306 -uroot -p123456 -e "SHOW VARIABLES LIKE 'validate_password%';" 2>/dev/null
 # 2，无警告非交互式命令执行：mysql -u root -p123456 -h 127.0.0.1 -P 3306 -Bse "show plugins;" 2>/dev/null
@@ -67,7 +64,7 @@ skip-name-resolve
 # 13，MySQL重置密码：vi /etc/my.cnf
 # 14，创建数据库并授权： 
      CREATE DATABASE `gitea` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-     GRANT ALL PRIVILEGES ON gitea.* TO 'abc'@'localhost' IDENTIFIED BY '12345678' with grant option;
+     GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' with grant option;
 	 flush privileges;
 # 15，创建用户并授权：
      CREATE USER 'gitea'@'%' IDENTIFIED BY '123456';
@@ -91,7 +88,7 @@ SET FOREIGN_KEY_CHECKS=1; #  启动外键约束
 #连接mysql，直接回车即可，不需要输入密码
 mysql -u root -p
 #更新root用户密码
-update mysql.user set authentication_string=password('yellowcong') where user='root' and Host = 'localhost';
+update mysql.user set authentication_string=password('123456') where user='root' and Host = 'localhost';
 #刷新权限
 flush privileges;
 #推出mysql

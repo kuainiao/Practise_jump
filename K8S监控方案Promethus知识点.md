@@ -2,6 +2,10 @@
 2，青云监控面板kubesphere：https://fuckcloudnative.io/posts/kubesphere/
 3，普罗米修斯：https://learnku.com/articles/22193
 
+4，Kubesphere搭建文档：https://www.cnblogs.com/wangxu01/articles/11777636.html
+
+
+
 sudo useradd --no-create-home --shell /usr/sbin/nologin prometheus
 sudo useradd --no-create-home --shell /bin/false node_exporter
 

@@ -505,6 +505,9 @@ GSSAPIAuthentication no
 3，shell四则运算和保留浮点数小数位：
 9，强转字符串为整型：#   pid=123  ;   pid=`echo ${pid}| awk '{print int($0)}'`
 
+传入超过10个参数：${10}
+/dev/null无权限：rm -f /dev/null && mknod -m 0666 /dev/null c 1 3
+
 10，shell四则运算计算1244/3*100浮点数保留2位小数的两种方法：
 [root@master ~]# echo "scale=4; 1244/3*100" | bc
 41466.6600
@@ -521,6 +524,20 @@ date
 crontab -l >/tmp/crontab.bak
 echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
 crontab /tmp/crontab.bak
+
+邮件发送：
+yum install -y mailx
+cat >> /etc/mail.rc <<EOF
+####################################
+set from="1290851757@qq.com"
+set smtp="smtps://smtp.qq.com:465"
+set smtp-auth-user="1290851757@qq.com"
+set smtp-auth-password="nzqygrzwccgpiejb"
+set smtp-auth=login
+set ssl-verify=ignore
+set nss-config-dir=/etc/pki/nssdb
+####################################
+EOF
 
 
 vi /etc/mail.rc

@@ -1,0 +1,4 @@
+1，好用的安卓模拟器：夜神模拟器和逍遥模拟器
+2，手机 PC 远程控制API代码：https://developer.oray.com/sdk
+3，云腾讯解决方案：https://cloud.tencent.com/solution/gs
+4，阿里云游戏解决方案：https://cn.aliyun.com/solution/game/cloudgame
