@@ -119,7 +119,7 @@ Get-ChildItem IIS:\apppools | ForEach-Object{
 
 
 $pathsss="E:\app\csgadministrator_08\product\11.2.0\dbhome_1\BIN\sqlplus.exe"
-if ( $pathsss -contains "sqlplus.exe")
+if ($pathsss.contains("sqlplus.exe"))
 {
 $output="aaaaa"
 [Console]::WriteLine($output)
