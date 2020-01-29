@@ -63,7 +63,7 @@ skip-name-resolve
       查询时间段：select fullName,addedTime FROM t_user where addedTime between  '2017-1-1 00:00:00'  and '2018-1-1 00:00:00'; 
 # 13，MySQL重置密码：vi /etc/my.cnf
 # 14，创建数据库并授权： 
-     CREATE DATABASE `gitea` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+     CREATE DATABASE `ios_sjjygj` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
      GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' with grant option;
 	 flush privileges;
 # 15，创建用户并授权：

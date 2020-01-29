@@ -18,6 +18,20 @@ python setup.py install
 python -m pip install --upgrade pip
 ################################
 
+简易安装pip工具：yum install python-pip 或 curl "https://bootstrap.pypa.io/get-pip.py" -o "get-pip.py"
+python get-pip.py
+pip install --upgrade pip
+
+豆瓣pip 安装加速：pip install -i http://pypi.douban.com/simple --trusted-host pypi.douban.com packagename
+
+永久更换pip源：修改~/.pip/pip.conf文件，如果没有就创建一个，写入如下内容（以清华源为例）：
+mkdir -p ~/.pip/
+cat >> ~/.pip/pip.conf <<EOF
+[global]
+index-url = https://pypi.tuna.tsinghua.edu.cn/simple
+[install]
+EOF
+
 
 1，所有python2文件开头加上 ：# -*- coding: utf-8 -*
 2，手动输入数字：a=input('请输入：')
@@ -38,3 +52,4 @@ python -m pip install --upgrade pip
 17，python获取某个进程信息：process=psutil.Process(PID)
 18，pthon遍历list： for pid in pids:
 19，python遍历：for listname in listss :  print listname
+20，打开ipynb文件要安装：Anaconda ipython notebook的jupyter

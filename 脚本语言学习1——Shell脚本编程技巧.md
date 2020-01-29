@@ -282,6 +282,9 @@ gpgcheck=0
 EOF
 yum clean all
 
+制作nginx yum源：
+
+
 44，在CentOS 7上安装Node.js的4种方法：https://www.cmswing.com/p/407.html
 
 45，列出目录里面所有隐藏文件：ls -a
@@ -479,7 +482,6 @@ EOF
 sysctl -p
 # ntp时间同步：
 yum install -y ntpdate
-cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 ntpdate us.pool.ntp.org
 crontab -l >/tmp/crontab.bak
@@ -508,6 +510,17 @@ GSSAPIAuthentication no
 传入超过10个参数：${10}
 /dev/null无权限：rm -f /dev/null && mknod -m 0666 /dev/null c 1 3
 
+1，或条件语句：  if [ $aaa -eq 0 -o $bbb -eq 0 ];then
+2，与条件语句：  if [ $aaa -eq 0 -a $bbb -ne 0 ];then
+3，判断文件存在：if [ -f $conf_path];then
+4，避免字符串为空报错：if [ x"$operation" == x"UpdateUser" ]
+5，定义方法返回：# 返回结果函数
+function result(){
+    echo "{'$1':{'value':$2,'unit':$3,'status':$4}}"
+}
+6，往方法传入参数调用：方法名  参数1（$1）  参数2  参数3  参数4
+7, 取路径/的前面路径，取路径部分：start_file="${conf_file%/*}"
+
 10，shell四则运算计算1244/3*100浮点数保留2位小数的两种方法：
 [root@master ~]# echo "scale=4; 1244/3*100" | bc
 41466.6600
@@ -525,6 +538,8 @@ crontab -l >/tmp/crontab.bak
 echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
 crontab /tmp/crontab.bak
 
+12，查询
+
 邮件发送：
 yum install -y mailx
 cat >> /etc/mail.rc <<EOF
@@ -539,11 +554,25 @@ set nss-config-dir=/etc/pki/nssdb
 ####################################
 EOF
 
+echo '邮件内容' | mail -s '邮件标题' 收件人邮箱
 
-vi /etc/mail.rc
-set from=1290851757@qq.com
-set smtp=smtp.qq.com
-set smtp-auth-user=1290851757@qq.com
-set smtp-auth-password=junvnvxgqlmiiibf
-set smtp-auth=login
+13，是否包含子字符串：
+strA="long string"
+strB="string"
+result=$(echo $strA | grep "${strB}")
+echo $result
 
+
+14,彻底关闭防火墙：
+vi /etc/selinux/config
+SELINUX=disabled
+#SELINUXTYPE=targeted
+
+setenforce 0
+
+15，查看索引节点：df -i
+cd /var/spool/postfix/maildrop
+ls | xargs -n 100 rm -rf 
+
+16，删除索引数量已满的文件命令：
+find . -type f -mtime +7 -delete

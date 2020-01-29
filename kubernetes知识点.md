@@ -115,10 +115,11 @@ rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-std
 4，解决节点NotReady问题：vi编辑 /var/lib/kubelet/kubeadm-flags.env 文件去掉cni，重启kubectl
 systemctl daemon-reload
 systemctl restart kubelet
-5，查看某个POD的运行情况：kubectl describe pod ca-cbcc85ddc-zxrj6 -n org2
+5，端口转发：echo 1 >/proc/sys/net/ipv4/ip_forward
+5，查看某个POD的运行情况：kubectl describe pod coredns-5c98db65d4-8r6zs -n kube-system
 6，查看某个POD的日志：kubectl logs peer0-org1-89bc7c46b-pdv64 -n org1
 7，创建一个POD：kubectl apply -f  kube-flannel.yml
-8，删除一个POD：kubectl delete pod naftis-mysql-test -n naftis
+8，删除一个POD：kubectl delete pod kube-flannel-ds-amd64-b5n8m -n kube-system
 9，进入一个POD：kubectl exec -it cli-59d46f884-p5grk bash -n org1
 10,无法在master节点部署POD：kubectl taint nodes --all node-role.kubernetes.io/master-
 11，进入Alpine容器：docker exec -it CONTAINER_ID sh

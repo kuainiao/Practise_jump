@@ -115,7 +115,9 @@ Get-ChildItem IIS:\apppools | ForEach-Object{
 
 
 判断文件路径是否存在：Test-Path  E:\app\csgadministrator_08\product\11.2.0\dbhome_1\BIN\sqlplus.exe
-判断字符串是否包含：
+判断字符串是否包含：echo /etc/my.cnf | grep "my.cnf"
+
+
 
 
 $pathsss="E:\app\csgadministrator_08\product\11.2.0\dbhome_1\BIN\sqlplus.exe"
