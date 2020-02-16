@@ -116,10 +116,10 @@ rpm2cpio python-rhsm-certificates-1.19.10-1.el7_4.x86_64.rpm | cpio -iv --to-std
 systemctl daemon-reload
 systemctl restart kubelet
 5，端口转发：echo 1 >/proc/sys/net/ipv4/ip_forward
-5，查看某个POD的运行情况：kubectl describe pod coredns-5c98db65d4-8r6zs -n kube-system
+5，查看某个POD的运行情况：kubectl describe pod tiller-deploy-86b574cb79-lrc4b  -n kube-system
 6，查看某个POD的日志：kubectl logs peer0-org1-89bc7c46b-pdv64 -n org1
 7，创建一个POD：kubectl apply -f  kube-flannel.yml
-8，删除一个POD：kubectl delete pod kube-flannel-ds-amd64-b5n8m -n kube-system
+8，删除一个POD：kubectl delete pod mongodb-enterprise-operator-5bc67bc976-7bnq4  -n mongodb
 9，进入一个POD：kubectl exec -it cli-59d46f884-p5grk bash -n org1
 10,无法在master节点部署POD：kubectl taint nodes --all node-role.kubernetes.io/master-
 11，进入Alpine容器：docker exec -it CONTAINER_ID sh
@@ -151,12 +151,17 @@ volumeBindingMode: Immediate
 kubectl apply -f StorageClass.yaml
 kubectl patch storageclass standard -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
+官方离线部署k8s高可用：https://www.kubernetes.org.cn/5904.html
+官方最新K8S+Mongo搭建方案：https://www.mongodb.com/blog/post/running-mongodb-ops-manager-in-kubernetes
+
+
+
 20,获取主机节点证书和token：
 ##############################
 kubeadm token create
 kubeadm token list
-openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
-kubeadm join 192.168.50.64:6443 --token pl3gg8.mrwivg0sph8jcrw1 --discovery-token-ca-cert-hash sha256:2626ecad67aa55dcdf5f26ca42d1eba0147af5be6fc8905af92af7e6150d693e
+openssl x509 -pubkey -in /etc/kubernetes/ssl/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+kubeadm join 192.168.50.232:6443 --token zbjire.3hd48uvoqsswgow6 --discovery-token-ca-cert-hash sha256:19ffab101364a187c60ad3b802c52c392c11e8f5fe62ca9a13af6ec38ddf0b96
 ##############################
 
 mkdir -p /opt/share

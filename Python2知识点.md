@@ -53,3 +53,6 @@ EOF
 18，pthon遍历list： for pid in pids:
 19，python遍历：for listname in listss :  print listname
 20，打开ipynb文件要安装：Anaconda ipython notebook的jupyter
+21，pip安装时报【fatal error: Python.h: No such file or directory compilation terminated】错误：
+sudo yum install python-devel   # for python2.x installs
+sudo yum install python34-devel   # for python3.4 installs

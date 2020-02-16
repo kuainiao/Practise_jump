@@ -1,16 +1,19 @@
 首先安装jdk环境
 #############################################################
-rpm -ivh /data/soft/jdk-8u152-linux-x64.rpm
+wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz
+mkdir -p /usr/java/
+tar -xzvf jdk-8u202-linux-x64.tar.gz -C/usr/java/
 pid="sed -i '/export JAVA_HOME/d' /etc/profile"
 eval $pid
 pid="sed -i '/export CLASSPATH/d' /etc/profile"
 eval $pid
 cat >> /etc/profile <<EOF
-export JAVA_HOME=/usr/java/jdk1.8.0_152
+export JAVA_HOME=/usr/java/jdk1.8.0_202
 export CLASSPATH=%JAVA_HOME%/lib:%JAVA_HOME%/jre/lib
 export PATH=\$PATH:\$JAVA_HOME/bin
 EOF
 source /etc/profile
+java -version
 #############################################################
 
 安装jenkins

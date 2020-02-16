@@ -231,7 +231,7 @@ EOF
 echo ${text[0]}
 
 33，批量杀进程：  # 
-ps -aux | grep httpd | grep -v grep | cut -c 7-15 | xargs kill -9 或 pkill -9 java
+ps -aux | grep mongo | grep -v grep | cut -c 7-15 | xargs kill -9 或 pkill -9 java
 
 34，文件
 #  stat a.txt   # 列出当前文件的详细修改信息
@@ -374,7 +374,7 @@ http://mirrors.163.com/centos/7/os/x86_64/Packages/python-iniparse-0.4-9.el7.noa
 http://mirrors.163.com/centos/7/os/x86_64/Packages/yum-plugin-fastestmirror-1.1.31-52.el7.noarch.rpm
 http://mirrors.163.com/centos/7/os/x86_64/Packages/yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
 rpm -aq|grep yum|xargs rpm -e --nodeps 
-rpm -aq|grep python-iniparse|xargs rpm -e --nodeps 
+rpm -aq|grep mongo|xargs rpm -e --nodeps 
 rpm -ivh python-iniparse-0.4-9.el7.noarch.rpm
 rpm -ivh yum-metadata-parser-1.1.4-10.el7.x86_64.rpm
 sed -i 's/$releasever/7/g' /etc/yum.repos.d/CentOS-Base.repo
@@ -384,16 +384,17 @@ yum clean all
 
 **********************  15，配置NFS：
 #  主机配置nfds临时挂载
-yum install nfs-utils   # 安装nfs权限
+yum install -y nfs-utils   # 安装nfs权限
+mkdir -p /data/soft/
 cat >> /etc/exports << EOF
-/data/soft/ 192.168.240.113 (rw,no_root_squash,async)
+/data/soft/ 192.168.50.229 (rw,no_root_squash,async)
 *(rw,no_root_squash,async,insecure)代表所有主机
 EOF
 service nfs start
 
 #  从机临时挂载
-mkdir -p /tmp/soft
-mount -t nfs 192.168.240.113:/data/soft/ /tmp/soft
+mkdir -p /mnt
+mount -t nfs 192.168.50.229:/data/soft/ /mnt
 cp -r /tmp/soft/jdk-8u152-linux-x64.rpm /data/soft/
 umount /tmp/soft
 
@@ -576,3 +577,8 @@ ls | xargs -n 100 rm -rf
 
 16，删除索引数量已满的文件命令：
 find . -type f -mtime +7 -delete
+
+1，查看系统用户：cat /etc/passwd|grep -v nologin|grep -v halt|grep -v shutdown|grep -v sync|grep -v syslog|awk -F":" '{ print $1 }'|more
+2，检测密码过期时间：chage -l root | grep "Password expires" | awk -F ": " '{ print $2 }'
+3，查看root用户过期时间：chage -l root
+4，设置密码有效期：chage -d 0 -m 0 -M 180 -W 15 root

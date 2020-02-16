@@ -28,8 +28,12 @@ sed命令获取含有“abc”的行数
 #  sed -n -e '/abc/='  shit.txt
 sed命令插入“rrr”到第2行前面
 #  sed '2 irrr' -i shit.txt
-sed命令插入“rrr2”到第2行后面
-#  sed '2 arrr2' -i a.txt
+sed命令插入“PASS_WARN_AGE 26”到/etc/login.defs第line_number行后面
+#  sed -i "$line_number"i"PASS_WARN_AGE 26" /etc/login.defs
+查看最后一行的内容
+#  sed -n '$p'
+
+
 
 3，获得出现某字符串的文件第几行：#   grep -rn 'abc'  a.txt
 

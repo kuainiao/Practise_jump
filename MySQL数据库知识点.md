@@ -41,7 +41,8 @@ cat  >> /etc/profile << EOF
 export PATH=\$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
 EOF
 source /etc/profile
-
+mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
+/etc/init.d/mysql start
 
 
 
@@ -63,8 +64,8 @@ skip-name-resolve
       查询时间段：select fullName,addedTime FROM t_user where addedTime between  '2017-1-1 00:00:00'  and '2018-1-1 00:00:00'; 
 # 13，MySQL重置密码：vi /etc/my.cnf
 # 14，创建数据库并授权： 
-     CREATE DATABASE `ios_sjjygj` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-     GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '123456' with grant option;
+     CREATE DATABASE `face` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+     GRANT ALL PRIVILEGES ON face.* TO 'root'@'localhost' IDENTIFIED BY '123456' with grant option;
 	 flush privileges;
 # 15，创建用户并授权：
      CREATE USER 'gitea'@'%' IDENTIFIED BY '123456';
@@ -93,5 +94,13 @@ update mysql.user set authentication_string=password('123456') where user='root'
 flush privileges;
 #推出mysql
 exit 
+
+#创建表：
+CREATE TABLE `user_info` (
+  `id` int(32) NOT NULL AUTO_INCREMENT,
+  `user_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8; 
+
 
 # 扩容分布式云数据库：https://cloud.google.com/spanner/?hl=zh-cn
