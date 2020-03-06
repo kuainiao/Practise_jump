@@ -1,6 +1,6 @@
-tar xzvf mongodb-linux-x86_64-rhel70-3.6.3.tgz -C /usr/local/
+tar xzvf mongodb-linux-x86_64-rhel70-3.4.21-rc0.tgz -C /usr/local/
 cd /usr/local
-mv mongodb-linux-x86_64-rhel70-3.6.3 mongodb
+mv mongodb-linux-x86_64-rhel70-3.4.21-rc0 mongodb
 cd mongodb
 mkdir data 
 mkdir log
@@ -23,7 +23,7 @@ EOF
 /usr/local/mongodb/bin/mongod -f /usr/local/mongodb/etc/mongodb.conf
 /usr/local/mongodb/bin/mongo --port=20000
 use admin
-db.createUser({user:"useradmin",pwd:"123456",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
+db.createUser({user:"useradmin",pwd:"Aa22123456",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
 
 0，配置后台启动：
 logappend=true

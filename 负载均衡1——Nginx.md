@@ -1,3 +1,6 @@
+Nginx开源可视化工具：https://github.com/onlyGuo/nginx-gui
+搭建流程：https://leanote.zzzmh.cn/blog/post/admin/%E8%BF%90%E7%BB%B4%E5%A4%A7%E6%9D%80%E5%99%A8%EF%BC%81Nginx%E5%8F%AF%E8%A7%86%E5%8C%96%E7%9B%91%E6%8E%A7%E7%AE%A1%E7%90%86%E9%A1%B5%E9%9D%A2%EF%BC%81
+
 1，普通安装，开监控模块
 
 yum install -y patch openssl pcre pcre-devel make cmake gcc gcc-c++ gcc-g77 flex bison file libtool libtool-libs autoconf kernel-devel libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel vim-minimal nano fonts-chinese gettext gettext-devel ncurses-devel gmp-devel pspell-devel unzip libcap diffutils
@@ -94,6 +97,28 @@ return 404;
 }
 }
 
+10，nginx访问加密校验：
+执行命令：htpasswd -c /www/server/nginx/html/passwd ioszdhyw
+server
+    {
+        auth_basic "Please input password";
+        auth_basic_user_file /www/server/nginx/html/passwd;
+    }
+
+11，nodejs（angular、react、vue）项目 404 解决方案
+server
+    {
+        listen 888;
+。。。。。。。。。。。。。。。。。
+        server_name 118.89.23.220;
+        error_page   404   index.html;
+。。。。。。。。。。。。。。。。。。。
+        location / {
+        root /www/server/nginx/html;
+        try_files $uri /index.html;
+    }
+。。。。。。。。。。。。。。。。。。。。
+    }
 
 
 

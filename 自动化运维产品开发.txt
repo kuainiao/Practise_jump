@@ -24,3 +24,192 @@ python3 manage.py makemigrations apply
 python3 manage.py migrate
 python3 manage.py createsuperuser
 
+
+
+############################# 部署 ###################################
+1，安装Python3和pip3
+###################################
+yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel libffi-devel expat-devel gdbm-devel readline-devel gcc gcc-c++ python-devel.x86_64 # 安装python3依赖库
+wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
+tar -zxvf Python-3.7.0.tgz
+cd `echo Python-3.7.0.tgz |awk 'BEGIN{FS="/"}''{print $NF}'| awk -F".tgz" '{print $NR}'`
+./configure  --prefix=/usr/local/python3 # 指定编译安装位置
+make && make install
+ln -s /usr/local/python3/bin/python3 /usr/bin/
+ln -s /usr/local/python3/bin/pip3 /usr/bin/
+###################################
+2，安装Redis
+###################################
+wget http://download.redis.io/releases/redis-5.0.5.tar.gz
+tar -xzvf redis-5.0.5.tar.gz -C /usr/local/
+yum install -y gcc
+cd /usr/local/redis-5.0.5/deps
+make hiredis jemalloc linenoise lua
+cd /usr/local/redis-5.0.5
+make MALLOC=libc
+cd ..
+mv redis-5.0.5/ redis/
+nohup /usr/local/redis/src/redis-server /usr/local/redis/redis.conf &
+###################################
+3，安装MySQL
+###################################
+yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_6.0.sh && bash install.sh
+vim /etc/my.cnf
+[mysqld]
+character_set_server = utf8
+添加以上字段
+mysql -uroot -p
+mysql> create database opsmanage;
+mysql> grant all privileges on opsmanage.* to root@'%' identified by '123456';
+###################################
+4，安装OpsManager
+###################################
+yum install -y mysql mysql-devel python3-devel libevent-devel gcc make cmake  yum install -y gcc make cmake zlib-devel bzip2 bzip2-devel readline-devel sqlite sqlite-devel openssl-devel xz xz-devel libffi-devel
+mkdir -p ~/.pip/
+cat > ~/.pip/pip.conf <<EOF
+[global]
+index-url = https://pypi.douban.com/simple
+[install]
+EOF
+pip3 install gevent
+cd /root/
+git clone https://github.com/welliamcao/OpsManage.git
+cd /root/OpsManage/
+yum install python3-ldap python-ldap
+yum install openldap-devel
+pip3 install python-ldap
+pip3 install -r requirements.txt
+vi OpsManage/settings.py
+REDSI_KWARGS_LPUSH = {"host":'127.0.0.1','port':6379,'db':3}
+if config.get('db', 'engine') == 'mysql':
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.mysql',
+            'NAME': 'opsmanage',
+            'USER': 'root',
+            'PASSWORD': '123456',
+            'HOST': '127.0.0.1',
+            'PORT': '3306',
+#             'CONN_MAX_AGE': 3600, #value which is less than wait_timeout in MySQL config (my.cnf).
+        }
+    }
+
+python3 manage.py makemigrations wiki
+python3 manage.py makemigrations orders
+python3 manage.py makemigrations filemanage
+python3 manage.py makemigrations navbar
+python3 manage.py makemigrations databases
+python3 manage.py makemigrations asset
+python3 manage.py makemigrations deploy
+python3 manage.py makemigrations cicd
+python3 manage.py makemigrations sched
+python3 manage.py makemigrations apply
+python3 manage.py migrate
+python3 manage.py createsuperuser  #创建管理员账户与密码
+###################################
+5，安装Nginx
+###################################
+yum install -y patch openssl pcre pcre-devel make cmake gcc gcc-c++ gcc-g77 flex bison file libtool libtool-libs autoconf kernel-devel libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel vim-minimal nano fonts-chinese gettext gettext-devel ncurses-devel gmp-devel pspell-devel unzip libcap diffutils
+wget http://ftp.cs.stanford.edu/pub/exim/pcre/pcre-8.38.tar.gz
+wget http://nginx.org/download/nginx-1.14.2.tar.gz
+userdel www
+groupdel www
+groupadd -f www
+useradd -g www www
+tar zxvf pcre-8.38.tar.gz -C /usr/local/
+tar zxvf nginx-1.14.2.tar.gz -C /usr/local/
+cd  /usr/local/nginx-1.14.2/
+./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module --with-pcre=/usr/local/pcre-8.38/ --with-pcre-jit
+make && make install
+
+echo_supervisord_conf > /etc/supervisord.conf
+export PYTHONOPTIMIZE=1
+cat>> /etc/supervisord.conf << EOF
+[program:celery-worker-default]
+command=/usr/local/python3/bin/celery -A OpsManage worker --loglevel=info -E -Q default -n worker-default@%%h
+directory=/mnt/OpsManage
+stdout_logfile=/var/log/celery-worker-default.log
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopsignal=QUIT
+numprocs=1
+
+[program:celery-worker-ansible]
+command=/usr/local/python3/bin/celery -A OpsManage worker --loglevel=info -E -Q ansible -n worker-ansible@%%h
+directory=/mnt/OpsManage
+stdout_logfile=/var/log/celery-worker-ansible.log
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopsignal=QUIT
+numprocs=1
+
+[program:celery-beat]
+command=/usr/local/python3/bin/celery -A OpsManage  beat --loglevel=info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+directory=/mnt/OpsManage
+stdout_logfile=/var/log/celery-beat.log
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopsignal=QUIT
+numprocs=1
+
+
+[program:opsmanage-web]
+command=/usr/local/python3/bin/python3 manage.py runserver 0.0.0.0:8000 --http_timeout 1200
+directory=/mnt/OpsManage
+stdout_logfile=/var/log/opsmanage-web.log   
+stderr_logfile=/var/log/opsmanage-web-error.log
+autostart=true
+autorestart=true
+redirect_stderr=true
+stopsignal=QUIT
+EOF
+
+
+# 启动celery
+supervisord -c /etc/supervisord.conf
+supervisorctl status #要检查是否都是running状态，uptime是不是递增
+九、启动部署平台
+python3 manage.py runserver 0.0.0.0:8000
+
+
+配置nginx（请注意服务器上面是否安装了Nginx）：
+# vim /etc/nginx/conf.d/opsmanage.conf 
+server {
+    listen 80 ;
+    server_name 192.168.1.233;
+
+    access_log /var/log/nginx/opsmanage_access.log;
+    error_log /var/log/nginx/opsmanage_error.log;
+
+    location / {
+        proxy_next_upstream off;
+        proxy_set_header    X-Real-IP           $remote_addr;
+        proxy_set_header    X-Forwarded-For     $proxy_add_x_forwarded_for;
+        proxy_set_header    Host                $host;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection "upgrade";
+        proxy_pass http://192.168.1.233:8000$request_uri;
+    }
+    location /static {
+        expires 30d;
+        autoindex on;
+        add_header Cache-Control private;
+        alias /mnt/OpsManage/static/;
+     }
+}
+# nginx -t  #检查配置文件
+# service start nginx			 #CentOS 6
+# systemctl start nginx.service  #CentOS 7
+十、使用OpsManage分布式任务调度功能，不使用的话可以不进行下面的步骤
+
+mkdir -p /usr/local/opsched
+cp /root/OpsManage/opsched/* /usr/local/opsched/
+vim /usr/local/opsched/sched.conf 
+注意修改里面secret跟ops_address的值，修改成自己的配置
+chmod -R 777 /usr/local/opsched/opsched
+/usr/local/opsched/opsched -f /usr/local/opsched/sched.conf -a check      #检查配置看看有没有报错
+/usr/local/opsched/opsched -f /usr/local/opsched/sched.conf -a runserver  #正式运行 

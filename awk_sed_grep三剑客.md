@@ -45,6 +45,8 @@ sed命令插入“PASS_WARN_AGE 26”到/etc/login.defs第line_number行后面
 
 7，截取符号右边的字符串：#   ${变量名#*符号}
 
+8，以冒号为分隔：cat /etc/passwd | awk -F "[:]"  '{print $3}'
+
 grep -w 精确匹配
 grep -v 排除
 grep正则排除注释行和空行：grep -Ev '^$|#' /etc/ssh/sshd_config

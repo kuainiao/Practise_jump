@@ -7,6 +7,8 @@ cd /usr/local/redis-5.0.5/deps
 make hiredis jemalloc linenoise lua
 cd /usr/local/redis-5.0.5
 make MALLOC=libc
+cd ..
+mv redis-5.0.5/ redis/
 /usr/local/redis/src/redis-server /usr/local/redis/redis.conf
 ############################################################
 

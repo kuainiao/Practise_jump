@@ -289,6 +289,27 @@ yum clean all
 
 45，列出目录里面所有隐藏文件：ls -a
 
+46，逗号分割字符串awk方法：str='redis,nginx,mysql'
+server=`echo ${str}|awk -F "[,]" '''{for(i=1;i<=NF;i++){print $i}}'''`
+for i in ${server[@]}  
+do
+    echo $i
+    num=`expr $num + 1`
+done  
+
+47，i++的效果： num=`expr $num + 1`
+
+48，变量截取-数字前面的：name="${i%%-[0-9]*}"
+
+49，遍历数组：
+server=`echo ${str}|awk -F "[,]" '''{for(i=1;i<=NF;i++){print $i}}'''`
+for i in ${server[@]}  
+do
+    echo $i
+    num=`expr $num + 1`
+done  
+
+
 *******************   12，yum下载本地依赖包
 yum install --downloadonly --downloaddir=/root/  boost-devel.x86_64
 rpm卸载：rpm -e 包名 --nodeps

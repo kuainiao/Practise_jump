@@ -3,8 +3,23 @@
 3，普罗米修斯：https://learnku.com/articles/22193
 
 4，Kubesphere搭建文档：https://www.cnblogs.com/wangxu01/articles/11777636.html
+https://blog.csdn.net/M2l0ZgSsVc7r69eFdTj/article/details/98540150
+https://www.cnblogs.com/suveng/p/11511517.html
+https://songjiayang.gitbooks.io/prometheus/content/exporter/nodeexporter_query.html
+Promethus监控docker：https://yunlzheng.gitbook.io/prometheus-book/part-ii-prometheus-jin-jie/exporter/commonly-eporter-usage/use-prometheus-monitor-container
 
+CPU使用率：100 - (avg by (instance) (irate(node_cpu_seconds_total{job="prometheus",mode="idle"}[5m])) * 100)
+内存使用率：100 - ((node_memory_MemFree_bytes{job="prometheus"}+node_memory_Cached_bytes{job="prometheus"}+node_memory_Buffers_bytes{job="prometheus"})/node_memory_MemTotal_bytes) * 100
+上行带宽：sum by (job) (irate(node_network_receive_bytes_total{job="prometheus",device!~"bond.*?|lo"}[5m])/128)
+下行带宽：sum by (job) (irate(node_network_transmit_bytes_total{job="prometheus",device!~"bond.*?|lo"}[5m])/128)
+容器CPU使用率：sum(irate(container_cpu_usage_seconds_total{image!=""}[1m])) without (cpu)
 
+##################################################################################################################
+wget https://github.com/prometheus/node_exporter/releases/download/v0.16.0/node_exporter-0.16.0.linux-amd64.tar.gz
+wget https://github.com/prometheus/prometheus/releases/download/v2.2.1/prometheus-2.2.1.linux-amd64.tar.gz
+wget https://dl.grafana.com/oss/release/grafana-6.6.2-1.x86_64.rpm
+
+scp grafana-6.4.3-1.x86_64.rpm 
 
 sudo useradd --no-create-home --shell /usr/sbin/nologin prometheus
 sudo useradd --no-create-home --shell /bin/false node_exporter
@@ -60,7 +75,12 @@ scrape_configs:
   - job_name: 'prometheus'
     scrape_interval: 5s
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['localhost:9100']
+	  
+    - job_name: 'cadvisor'
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['localhost:8080']
 #################################
 chown prometheus:prometheus /etc/prometheus/prometheus.yml
 
@@ -92,6 +112,17 @@ systemctl start prometheus
 
 rpm -ivh grafana-6.4.3-1.x86_64.rpm
 sudo systemctl daemon-reload && sudo systemctl enable grafana-server && sudo systemctl start grafana-server
+
+
+
+
+
+
+
+
+
+
+
 
 
 # https://kubesphere.io/zh-CN/install/

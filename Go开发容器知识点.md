@@ -14,6 +14,8 @@ go version
 
 入门1：https://www.cnblogs.com/java-zhao/p/9942311.html
 入门2：https://www.zybuluo.com/octopus/note/1212993#split-%E5%AD%97%E7%AC%A6%E4%B8%B2%E5%88%86%E5%89%B2%E4%B8%BA%E6%95%B0%E7%BB%84
+Go定时任务包：https://github.com/jasonlvhit/gocron
+Go时间标准库: https://mp.weixin.qq.com/s/UyZKBzLhsePXWs6vn9uRgg
 编译go程序：go build
 
 package main

@@ -45,6 +45,24 @@ mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
 /etc/init.d/mysql start
 
 
+######################  yum 安装mysql ######################
+rpm -qa | grep mariadb
+#如果找到，则拷贝结果，使用下面命令删除，如删除mariadb-libs-5.5.35-3.el7.x86_64
+rpm -e --nodeps mariadb-libs-5.5.35-3.el7.x86_64
+wget -i -c http://dev.mysql.com/get/mysql57-community-release-el7-10.noarch.rpm
+yum -y install mysql57-community-release-el7-10.noarch.rpm
+yum -y install mysql-community-server
+service mysqld restart
+
+grep "password" /var/log/mysqld.log   
+mysql -u root -p 
+
+alter user 'root'@'localhost' identified by 'Aa12345678';  
+flush privileges;
+CREATE DATABASE `o2oa` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON o2oa.* TO 'root'@'*' IDENTIFIED BY 'Root!!2018' with grant option;
+flush privileges;
+##################################################################
 
 # 1，非交互式命令创建dog用户：mysql -h127.0.0.1 -P3306 -uroot -p123456 -e "SHOW VARIABLES LIKE 'validate_password%';" 2>/dev/null
 # 2，无警告非交互式命令执行：mysql -u root -p123456 -h 127.0.0.1 -P 3306 -Bse "show plugins;" 2>/dev/null
@@ -64,12 +82,12 @@ skip-name-resolve
       查询时间段：select fullName,addedTime FROM t_user where addedTime between  '2017-1-1 00:00:00'  and '2018-1-1 00:00:00'; 
 # 13，MySQL重置密码：vi /etc/my.cnf
 # 14，创建数据库并授权： 
-     CREATE DATABASE `face` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-     GRANT ALL PRIVILEGES ON face.* TO 'root'@'localhost' IDENTIFIED BY '123456' with grant option;
+     CREATE DATABASE `RAP2_DELOS_APP` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+     GRANT ALL PRIVILEGES ON RAP2_DELOS_APP.* TO 'sa'@'*' IDENTIFIED BY 'rwp363XcxeKk5JrY' with grant option;
 	 flush privileges;
 # 15，创建用户并授权：
-     CREATE USER 'gitea'@'%' IDENTIFIED BY '123456';
-     GRANT ALL PRIVILEGES ON gitea.* TO 'gitea'@'%' IDENTIFIED BY '123456' with grant option;
+     CREATE USER 'sa'@'%' IDENTIFIED BY 'ioszdhyw';
+     GRANT ALL PRIVILEGES ON RAP2_DELOS_APP.* TO 'sa'@'%' IDENTIFIED BY 'ioszdhyw' with grant option;
      flush privileges;
 # 16，指定mysql.sock位置：/home/mysql/mariadb/bin/mysql -uioszdhyw -p -S /home/mysql/mariadb/mysql.sock
 [mysqld]
@@ -77,6 +95,8 @@ skip-grant-tables
 # 17，更新root用户密码
 update mysql.user set authentication_string=password('123456') where user='root' and Host = 'localhost';
 flush privileges;
+# 设置mysql root密码：
+alter user 'root'@'localhost' identified by 'Root!!2018';  
 # 18，清空数据表
 truncate table tablename;
 delete from tablename where id=0;
@@ -89,7 +109,7 @@ SET FOREIGN_KEY_CHECKS=1; #  启动外键约束
 #连接mysql，直接回车即可，不需要输入密码
 mysql -u root -p
 #更新root用户密码
-update mysql.user set authentication_string=password('123456') where user='root' and Host = 'localhost';
+update mysql.user set authentication_string=password('') where user='root' and Host = 'localhost';
 #刷新权限
 flush privileges;
 #推出mysql
@@ -104,3 +124,5 @@ CREATE TABLE `user_info` (
 
 
 # 扩容分布式云数据库：https://cloud.google.com/spanner/?hl=zh-cn
+
+INSERT INTO repositories_members (createdAt, updatedAt, repositoryId, userId) VALUES (NOW(),NOW(),"", "100000028");

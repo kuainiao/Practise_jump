@@ -4,10 +4,12 @@ Nodejs部署
 wget https://npm.taobao.org/mirrors/node/v10.16.0/node-v10.16.0-linux-x64.tar.gz  # 下载
 tar xf  node-v10.16.0-linux-x64.tar.gz       # 解压
 cd node-v10.16.0-linux-x64/                  # 进入解压目录
+cat >> /etc/profile <<EOF
+export node_HOME=/usr/local/node
+export PATH=\$PATH:\$node_HOME/bin
+EOF
+source /etc/profile
 node -v                               # 执行node命令 查看版本
-# 创建软链接做环境变量
-ln bin/node node 
-ln bin/npm npm 
 
 
 0，编译比较新的node项目，最好将nodejs版本更新至最新，npm编译失败很大可能是因为nodejs版本过低导致的

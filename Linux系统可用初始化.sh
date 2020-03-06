@@ -13,7 +13,7 @@ crontab /tmp/crontab.bak
 date
 
 # 3，安装基础软件：
-yum install -y wget net-tools
+yum install -y wget net-tools git
 
 # 4，安装阿里源：
 # yum源换阿里源
@@ -88,4 +88,65 @@ index-url = https://pypi.tuna.tsinghua.edu.cn/simple
 [install]
 EOF
 
+######################################################################################
+
+
+
+10，安装jdk：
+######################################################################################
+wget https://repo.huaweicloud.com/java/jdk/8u202-b08/jdk-8u202-linux-x64.tar.gz
+mkdir -p /usr/java/
+tar -xzvf jdk-8u202-linux-x64.tar.gz -C/usr/java/
+pid="sed -i '/export JAVA_HOME/d' /etc/profile"
+eval $pid
+pid="sed -i '/export CLASSPATH/d' /etc/profile"
+eval $pid
+cat >> /etc/profile <<EOF
+export JAVA_HOME=/usr/java/jdk1.8.0_202
+export CLASSPATH=%JAVA_HOME%/lib:%JAVA_HOME%/jre/lib
+export PATH=\$PATH:\$JAVA_HOME/bin
+EOF
+source /etc/profile
+java -version
+######################################################################################
+11，安装Nginx：
+######################################################################################
+yum install -y patch openssl pcre pcre-devel make cmake gcc gcc-c++ gcc-g77 flex bison file libtool libtool-libs autoconf kernel-devel libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel vim-minimal nano fonts-chinese gettext gettext-devel ncurses-devel gmp-devel pspell-devel unzip libcap diffutils
+wget http://ftp.cs.stanford.edu/pub/exim/pcre/pcre-8.38.tar.gz
+wget http://nginx.org/download/nginx-1.14.2.tar.gz
+userdel www
+groupdel www
+groupadd -f www
+useradd -g www www
+tar zxvf pcre-8.38.tar.gz -C /usr/local/
+tar zxvf nginx-1.14.2.tar.gz -C /usr/local/
+cd  /usr/local/nginx-1.14.2/
+./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module --with-pcre=/usr/local/pcre-8.38/ --with-pcre-jit
+make && make install
+######################################################################################
+12，安装Docker：
+######################################################################################
+yum -y update
+yum install -y wget
+yum install -y yum-utils device-mapper-persistent-data lvm2
+cd /etc/yum.repos.d/
+yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
+yum -y install docker-ce
+systemctl start docker
+systemctl enable docker
+
+sudo mkdir -p /etc/docker
+cat >/etc/docker/daemon.json <<EOF
+{
+  "registry-mirrors": ["https://ot7dvptd.mirror.aliyuncs.com"]
+}
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
+curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
+chmod +x /usr/local/bin/docker-compose
+ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+docker-compose --version
+docker-compose up
 ######################################################################################

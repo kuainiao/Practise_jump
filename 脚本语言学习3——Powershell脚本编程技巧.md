@@ -13,7 +13,6 @@ if (!$?)
 $output=""
 [Console]::WriteLine($output)
 }
-elseif($n -eq 0){ }
 else
 { }
 
@@ -40,6 +39,8 @@ $have_openssl = (Get-Content b.txt -TotalCount 87)[-1].Split("have_openssl")[-1]
 13£¬É¾³ýÎÄ¼þ£ºdel a.txt
 
 14,·Ö¸ô×Ö·û´®£º
+$processes=$process_name -Split ","
+echo $processes
 #############################
 export IFS=";"
 sentence="alter user;alter user;alter user"

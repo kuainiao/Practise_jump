@@ -1,3 +1,4 @@
+
 yum install -y wget net-tools
 yum install -y httpd mariadb-server mariadb php php-mysql php-gd libjpeg* php-ldap php-odbc php-pear php-xml php-xmlrpc php-mhash php-mbstring php-bcmath
 vi /etc/httpd/conf/httpd.conf
@@ -104,7 +105,6 @@ setenforce 0
 systemctl enable zabbix-agent.service
 systemctl restart zabbix-agent.service
 netstat -anpt | grep zabbix
-
 
 
 # 访问 http://118.89.23.220/zabbix，账号：Admin，密码：zabbix

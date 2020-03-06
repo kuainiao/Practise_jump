@@ -1,7 +1,7 @@
 https://www.jianshu.com/p/a024dc5ade92
 http://blog.chinaunix.net/uid-26168435-id-5736568.html
 
-1，安装Docker（K8s master和K8s node1执行）
+# 1，安装Docker（K8s master和K8s node1执行）
 yum -y update
 yum install -y wget
 yum install -y yum-utils device-mapper-persistent-data lvm2
@@ -11,7 +11,7 @@ yum -y install docker-ce
 systemctl start docker
 systemctl enable docker
 
-2，docker加速：
+# 2，docker加速：
 sudo mkdir -p /etc/docker
 cat >/etc/docker/daemon.json <<EOF
 {
@@ -21,7 +21,7 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl restart docker
 
-3，
+# 3，
 curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 chmod +x /usr/local/bin/docker-compose
 ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
@@ -193,3 +193,13 @@ rpm -e docker-common-1.13.1-103.git7f2769b.el7.centos.x86_64  --nodeps
 rpm -e docker-1.13.1-103.git7f2769b.el7.centos.x86_64         --nodeps
 rm -rf /var/lib/docker
 
+31，安装composer：
+# 安装Docker Composer
+sudo curl -L https://github.com/docker/compose/releases/download/1.17.1/docker-compose-`uname -s`-`uname -m` > /usr/local/bin/docker-compose
+sudo chmod +x /usr/local/bin/docker-compose
+curl -L https://raw.githubusercontent.com/docker/compose/1.13.0/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose
+
+Docker运行Nginx：
+  304  docker pull nginx:latest
+  305  docker run --name nginx-test -p 8880:80 -d nginx
+  306  curl http://127.0.0.1:8880
