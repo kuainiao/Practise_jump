@@ -3,15 +3,18 @@
 3，普罗米修斯：https://learnku.com/articles/22193
 
 4，Kubesphere搭建文档：https://www.cnblogs.com/wangxu01/articles/11777636.html
-https://blog.csdn.net/M2l0ZgSsVc7r69eFdTj/article/details/98540150
-https://www.cnblogs.com/suveng/p/11511517.html
-https://songjiayang.gitbooks.io/prometheus/content/exporter/nodeexporter_query.html
+脚本图形化监控：https://blog.csdn.net/M2l0ZgSsVc7r69eFdTj/article/details/98540150
+入门：https://www.cnblogs.com/suveng/p/11511517.html
+
+主机监控指标：https://songjiayang.gitbooks.io/prometheus/content/exporter/nodeexporter_query.html
 Promethus监控docker：https://yunlzheng.gitbook.io/prometheus-book/part-ii-prometheus-jin-jie/exporter/commonly-eporter-usage/use-prometheus-monitor-container
 
 CPU使用率：100 - (avg by (instance) (irate(node_cpu_seconds_total{job="prometheus",mode="idle"}[5m])) * 100)
 内存使用率：100 - ((node_memory_MemFree_bytes{job="prometheus"}+node_memory_Cached_bytes{job="prometheus"}+node_memory_Buffers_bytes{job="prometheus"})/node_memory_MemTotal_bytes) * 100
 上行带宽：sum by (job) (irate(node_network_receive_bytes_total{job="prometheus",device!~"bond.*?|lo"}[5m])/128)
 下行带宽：sum by (job) (irate(node_network_transmit_bytes_total{job="prometheus",device!~"bond.*?|lo"}[5m])/128)
+磁盘使用率：100 - node_filesystem_free{instance="xxx",fstype!~"rootfs|selinuxfs|autofs|rpc_pipefs|tmpfs|udev|none|devpts|sysfs|debugfs|fuse.*"} / node_filesystem_size{instance="xxx",fstype!~"rootfs|selinuxfs|autofs|rpc_pipefs|tmpfs|udev|none|devpts|sysfs|debugfs|fuse.*"} * 100
+
 容器CPU使用率：sum(irate(container_cpu_usage_seconds_total{image!=""}[1m])) without (cpu)
 
 ##################################################################################################################
@@ -50,6 +53,19 @@ EOF
 systemctl daemon-reload
 systemctl start node_exporter
 systemctl enable node_exporter
+
+###################################################################
+
+
+docker run \
+  --volume=/:/rootfs:ro \
+  --volume=/var/run:/var/run:rw \
+  --volume=/sys:/sys:ro \
+  --volume=/var/lib/docker/:/var/lib/docker:ro \
+  --publish=8080:8080 \
+  --detach=true \
+  --name=cadvisor \
+  google/cadvisor:latest
 
 ###################################################################
 

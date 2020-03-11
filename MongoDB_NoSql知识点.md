@@ -23,7 +23,7 @@ EOF
 /usr/local/mongodb/bin/mongod -f /usr/local/mongodb/etc/mongodb.conf
 /usr/local/mongodb/bin/mongo --port=20000
 use admin
-db.createUser({user:"useradmin",pwd:"Aa22123456",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
+db.createUser({user:"useradmin",pwd:"Aa12345678",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
 
 0，配置后台启动：
 logappend=true

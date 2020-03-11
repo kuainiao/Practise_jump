@@ -576,7 +576,7 @@ set nss-config-dir=/etc/pki/nssdb
 ####################################
 EOF
 
-echo '邮件内容' | mail -s '邮件标题' 收件人邮箱
+echo '邮件内容' | mail -s '邮件标题' 1755337994@qq.com
 
 13，是否包含子字符串：
 strA="long string"

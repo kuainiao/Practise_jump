@@ -1,6 +1,16 @@
 # https://blog.51cto.com/andyxu/2124697
 # https://blog.csdn.net/boling_cavalry/article/details/79836171
 
+时间修正：
+#######################
+yum install -y ntpdate
+yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ntpdate us.pool.ntp.org
+crontab -l >/tmp/crontab.bak
+echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
+crontab /tmp/crontab.bak
+#######################
+
 wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.7.2.tar.gz
 wget https://artifacts.elastic.co/downloads/kibana/kibana-6.7.2-linux-x86_64.tar.gz
 wget https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-6.7.2-linux-x86_64.tar.gz
@@ -107,12 +117,4 @@ nohup /usr/local/filebeat-6.7.2-linux-x86_64/filebeat -e -c /usr/local/filebeat-
 3，Docker目录位置：- /var/new_lib/docker/containers/*/*-json.log
 4，服务器时间与真实时间不一致
 
-时间修正：
-#######################
-yum install -y ntpdate
-yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
-ntpdate us.pool.ntp.org
-crontab -l >/tmp/crontab.bak
-echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
-crontab /tmp/crontab.bak
-#######################
+

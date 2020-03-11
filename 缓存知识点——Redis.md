@@ -1,14 +1,14 @@
 Redis安装：
 ############################################################
-wget http://download.redis.io/releases/redis-5.0.5.tar.gz
-tar -xzvf redis-5.0.5.tar.gz -C /usr/local/
+wget http://download.redis.io/releases/redis-4.0.10.tar.gz
+tar -xzvf redis-4.0.10.tar.gz -C /usr/local/
 yum install -y gcc
-cd /usr/local/redis-5.0.5/deps
+cd /usr/local/redis-4.0.10/deps
 make hiredis jemalloc linenoise lua
-cd /usr/local/redis-5.0.5
+cd /usr/local/redis-4.0.10
 make MALLOC=libc
 cd ..
-mv redis-5.0.5/ redis/
+mv redis-4.0.10/ redis/
 /usr/local/redis/src/redis-server /usr/local/redis/redis.conf
 ############################################################
 
