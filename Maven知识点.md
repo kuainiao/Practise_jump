@@ -40,15 +40,26 @@ java -version
 #############################################################
 
 $ wget https://mirrors.tuna.tsinghua.edu.cn/apache/maven/maven-3/3.3.9/binaries/apache-maven-3.3.9-bin.tar.gz
-$ tar -xzvf apache-maven-3.3.9-bin.tar.gz -C /usr/local
-$ mv /usr/local/apache-maven-3.3.9/ /usr/local/maven/
+tar -xzvf apache-maven-3.3.9-bin.tar.gz -C /usr/local
+mv /usr/local/apache-maven-3.3.9/ /usr/local/maven/
 
-$ vi /etc/profile
+cat >> /etc/profile <<EOF
 MAVEN_HOME=/usr/local/maven
 export MAVEN_HOME
-export PATH=$PATH:$MAVEN_HOME/bin
-$ source /etc/profile
-```    
+export PATH=\$PATH:\$MAVEN_HOME/bin
+EOF
+source /etc/profile
+
+# maven配置文件内容：
+  <mirrors>
+    <mirror>
+      <id>alimaven</id>
+      <mirrorOf>central</mirrorOf>
+      <name>aliyun maven</name>
+      <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+    </mirror>
+  </mirrors>
+`````````````````````
 
 ###  运行springboot项目
 

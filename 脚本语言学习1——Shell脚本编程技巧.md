@@ -136,6 +136,22 @@ do
     echo $a; 
 done
 
+19，
+#查看firewalld防火墙规则：
+firewall-cmd --list-services
+#更新firewalld规则：
+firewall-cmd --reload
+#开启80端口
+firewall-cmd --zone=public --add-port=80/tcp --permanent 
+#删除80端口
+firewall-cmd --zone=public --remove-port=80/tcp --permanent
+#查看状态：
+systemctl status firewalld.service
+#禁止特定ip连接：
+firewall-cmd --permanent --zone=public --add-rich-rule="rule family='ipv4' source address='192.168.225.1' service name='ssh' reject"
+firewall-cmd --permanent --zone=public --add-rich-rule="rule family='ipv4' source address='192.168.225.1' port port=22 protocol=tcp reject"
+firewall-cmd --reload
+
 20，判断命令是否执行成功
 $? == 0  # 成功
 $? != 0  # 失败
@@ -324,10 +340,11 @@ yum安装rpm包不带公钥：yum install -y 包名 --nogpgcheck
 
 46，grep正则排除注释行和空行：grep -Ev '^$|#' /etc/ssh/sshd_config
 
-47，配置ssh免密登陆：ssh-keygen -t rsa
-ssh-copy-id -i ~/.ssh/id_rsa.pub  user@host
+47，配置ssh免密登陆：
+ssh-keygen -t rsa
+ssh-copy-id -i ~/.ssh/id_rsa.pub  root@192.168.225.193
+# 192.168.225.193执行
 chmod 600 /root/.ssh/authorized_keys
-chmod 700 /home/luyanjie
 
 48，格式化输出日期：
 date "+%Y%m%d%H%M%S"
@@ -511,6 +528,9 @@ echo "10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/cron
 crontab /tmp/crontab.bak
 date
 
+# 手动修改系统时间
+date -s "20200413 09:27:00"
+
 # 获取ntp时间服务偏差：
 ntpdate -q us.pool.ntp.org | grep "offset*.*sec"|awk '{print $(NF-1)}'|head -1
 
@@ -590,6 +610,9 @@ vi /etc/selinux/config
 SELINUX=disabled
 #SELINUXTYPE=targeted
 
+15，替换字符串的空格
+echo "1    2  3 4    5     6"|sed 's/ //g'
+
 setenforce 0
 
 15，查看索引节点：df -i
@@ -598,6 +621,18 @@ ls | xargs -n 100 rm -rf
 
 16，删除索引数量已满的文件命令：
 find . -type f -mtime +7 -delete
+
+17，新建多个文件夹：mkdir -p {aa,bb,cc}
+
+18，实时看文件输出变化：tailf 文件名
+
+19，压缩文件夹：
+tar zcvf 压缩包文件名.tar.gz 需要压缩的文件名
+
+20，时间写入硬件
+hclock -w
+
+21，获取文件或文件夹权限：stat /usr/local/mysql/bin/  |head -n4|tail -n1|cut -d "/" -f1
 
 1，查看系统用户：cat /etc/passwd|grep -v nologin|grep -v halt|grep -v shutdown|grep -v sync|grep -v syslog|awk -F":" '{ print $1 }'|more
 2，检测密码过期时间：chage -l root | grep "Password expires" | awk -F ": " '{ print $2 }'

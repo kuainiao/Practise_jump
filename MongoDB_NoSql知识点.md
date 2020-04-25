@@ -108,4 +108,7 @@ mongoimport -h localhost:27017 -d wenshu_clean_db -c court_info2 court_info.json
 15，查看集合是否分片
 use db_source
 db.court_info.stats().sharded
-16，
+16，查看用户授权情况：
+db.system.users.find()
+db.grantRolesToUser( "useradmin" , [ { role: "root", db: "admin" } ])
+db.revokeRolesFromUser( "useradmin" , [ { role: "root", db: "admin" } ]

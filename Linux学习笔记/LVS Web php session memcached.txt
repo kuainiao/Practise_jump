@@ -1,3 +1,8 @@
+1，安装宝塔：yum install -y wget && wget -O install.sh http://download.bt.cn/install/install_6.0.sh && sh install.sh
+
+Bt-Panel: http://118.89.23.220:8888/63405ca1
+username: smeujuff
+password: ef6a118c
 
 前提：
 1、配置各php支持使用memcache；

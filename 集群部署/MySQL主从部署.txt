@@ -1,0 +1,217 @@
+﻿#!/usr/bin/env bash
+
+#教程：https://cloud.tencent.com/developer/article/1005764
+mkdir -p /data/ioszdhyw/soft/
+
+wget http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.7/mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz
+yum -y install wget gcc gcc-c++ ncurses ncurses-devel cmake numactl.x86_64
+
+# 主从机执行，安装目录
+tar -zxvf mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz -C /usr/local/
+mv /usr/local/mysql-5.7.29-linux-glibc2.12-x86_64/ /usr/local/mysql
+cd /usr/local/
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+
+# 主机配置，端口3318
+cat >/etc/my.cnf <<EOF
+[client]
+port=3318
+socket=/tmp/mysql.sock
+[mysqld]
+port=3318
+socket=/tmp/mysql.sock
+skip-external-locking
+key_buffer_size = 38M
+max_allowed_packet = 1M
+table_open_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+read_buffer_size = 256K
+read_rnd_buffer_size = 512K
+myisam_sort_buffer_size = 8M
+basedir=/usr/local/mysql
+datadir=/var/lib/mysql
+bind-address=0.0.0.0
+innodb_flush_log_at_trx_commit=1
+sync_binlog=1
+log-bin=/var/lib/mysql/mysql_logbin
+log-error=/var/log/mariadb
+slow_query_log =1
+slow_query_log_file=/tmp/mysql_slow.log
+server-id=1
+symbolic-links=0
+[mysqld_safe]
+pid-file=/var/run/mariadb/mariadb.pid
+EOF
+
+
+
+# 从机配置，端口3318
+cat >/etc/my.cnf <<EOF
+[client]
+port=3318
+socket=/tmp/mysql.sock
+[mysqld]
+port=3318
+socket=/tmp/mysql.sock
+skip-external-locking
+key_buffer_size = 1638M
+max_allowed_packet = 1M
+table_open_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+read_buffer_size = 256K
+read_rnd_buffer_size = 512K
+myisam_sort_buffer_size = 8M
+basedir=/usr/local/mysql
+datadir=/var/lib/mysql
+bind-address=0.0.0.0
+server-id=2
+sync_binlog=1
+log-bin=/var/lib/mysql/mysql_logbin
+log-error=/var/log/mariadb
+slow_query_log =1
+slow_query_log_file=/tmp/mysql_slow.log
+[mysqld_safe]
+pid-file=/var/run/mariadb/mariadb.pid
+EOF
+
+# 主从机执行
+useradd mysql
+groupadd mysql
+mkdir -p /usr/local/mysql/data
+chown mysql:mysql /usr/local/mysql/data
+mkdir -p /var/log/mariadb
+chown mysql:mysql /var/log/mariadb/
+touch /var/log/mariadb/mariadb.log
+mkdir -p /var/run/mariadb
+chmod -R 777 /var/log/mariadb/
+chown mysql:mysql /var/run/mariadb/
+touch /var/run/mariadb/mariadb.pid
+mv /var/lib/mysql/ /var/lib/mysql_bak/
+mkdir -p /var/lib/mysql
+chown mysql:mysql /var/lib/mysql
+cat  >> /etc/profile << EOF
+export PATH=\$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
+EOF
+source /etc/profile
+su - mysql
+mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
+/etc/init.d/mysql start
+
+su -
+firewall-cmd --zone=public --add-port=3318/tcp --permanent
+firewall-cmd --reload
+
+
+# 主机！！！修改密码，并创建用户
+mysql -u root -p
+#############################
+#更新root用户密码
+update mysql.user set authentication_string=password('ITyy2020@mss12') where user='root' and Host = 'localhost';
+flush privileges;
+
+create user 'ityymaster2'@'%' identified by 'ITyy2020@mss12';
+grant replication slave on *.* to 'ityymaster2'@'%' identified by 'ITyy2020@mss12';
+flush tables with read lock;
+show master status;
+mysql> show master status;
++------------------+----------+--------------+------------------+-------------------+
+| File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
++------------------+----------+--------------+------------------+-------------------+
+| mysql-bin.000004 |      913 |              |                  |                   |
++------------------+----------+--------------+------------------+-------------------+
+1 row in set (0.00 sec)
+
+unlock tables;
+
+#############################
+
+# 丛机！！！
+mysql -u root -p
+#############################
+#更新root用户密码
+update mysql.user set authentication_string=password('ITyy2020@mss12') where user='root' and Host = 'localhost';
+flush privileges;
+change master to master_host='10.92.162.242',master_user='ityymaster2', master_password='ITyy2020@mss12',master_port=3318,master_log_file='mysql-bin.000007',master_log_pos=154,master_connect_retry=10;
+start slave;
+show slave status\G;
+mysql> show slave status\G;
+*************************** 1. row ***************************
+               Slave_IO_State: Waiting for master to send event
+                  Master_Host: 10.92.162.242
+                  Master_User: ityymaster2
+                  Master_Port: 3318
+                Connect_Retry: 10
+              Master_Log_File: mysql-bin.000004
+          Read_Master_Log_Pos: 913
+               Relay_Log_File: vs-ios-ityyltdb01-relay-bin.000002
+                Relay_Log_Pos: 320
+        Relay_Master_Log_File: mysql-bin.000004
+             Slave_IO_Running: Yes
+            Slave_SQL_Running: Yes
+              Replicate_Do_DB:
+          Replicate_Ignore_DB:
+           Replicate_Do_Table:
+       Replicate_Ignore_Table:
+      Replicate_Wild_Do_Table:
+  Replicate_Wild_Ignore_Table:
+                   Last_Errno: 0
+                   Last_Error:
+                 Skip_Counter: 0
+          Exec_Master_Log_Pos: 913
+              Relay_Log_Space: 539
+              Until_Condition: None
+               Until_Log_File:
+                Until_Log_Pos: 0
+           Master_SSL_Allowed: No
+           Master_SSL_CA_File:
+           Master_SSL_CA_Path:
+              Master_SSL_Cert:
+            Master_SSL_Cipher:
+               Master_SSL_Key:
+        Seconds_Behind_Master: 0
+Master_SSL_Verify_Server_Cert: No
+                Last_IO_Errno: 0
+                Last_IO_Error:
+               Last_SQL_Errno: 0
+               Last_SQL_Error:
+  Replicate_Ignore_Server_Ids:
+             Master_Server_Id: 1
+                  Master_UUID: 5e0e40ac-7240-11ea-99ed-0cda411d2454
+             Master_Info_File: /var/lib/mysql/master.info
+                    SQL_Delay: 0
+          SQL_Remaining_Delay: NULL
+      Slave_SQL_Running_State: Slave has read all relay log; waiting for more updates
+           Master_Retry_Count: 86400
+                  Master_Bind:
+      Last_IO_Error_Timestamp:
+     Last_SQL_Error_Timestamp:
+               Master_SSL_Crl:
+           Master_SSL_Crlpath:
+           Retrieved_Gtid_Set:
+            Executed_Gtid_Set:
+                Auto_Position: 0
+         Replicate_Rewrite_DB:
+                 Channel_Name:
+           Master_TLS_Version:
+1 row in set (0.00 sec)
+
+
+#############################
+
+
+# 主机和从机！！！创建用户并授权数据库
+mysql -u root -p
+#############################
+CREATE USER 'iosityy'@'10.92.214.173' IDENTIFIED BY 'ITyy2020@mss12';
+CREATE USER 'iosityy'@'10.92.214.174' IDENTIFIED BY 'ITyy2020@mss12';
+CREATE USER 'iosityy'@'10.92.214.175' IDENTIFIED BY 'ITyy2020@mss12';
+flush privileges;
+CREATE DATABASE `ios_ityy` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON ios_ityy.* TO 'iosityy'@'10.92.214.173' IDENTIFIED BY 'ITyy2020@mss12' with grant option;
+GRANT ALL PRIVILEGES ON ios_ityy.* TO 'iosityy'@'10.92.214.174' IDENTIFIED BY 'ITyy2020@mss12' with grant option;
+GRANT ALL PRIVILEGES ON ios_ityy.* TO 'iosityy'@'10.92.214.175' IDENTIFIED BY 'ITyy2020@mss12' with grant option;
+flush privileges;
+#############################
+

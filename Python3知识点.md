@@ -32,7 +32,6 @@ ldconfig -v
 b，下载编译安装Python3和PIP3
 ############################################################
 yum install -y zlib-devel bzip2-devel openssl-devel ncurses-devel sqlite-devel libffi-devel expat-devel gdbm-devel readline-devel gcc gcc-c++ python-devel.x86_64 # 安装python3依赖库
-rpm -ivh libffi-devel-3.0.13-18.el7.x86_64.rpm
 wget https://www.python.org/ftp/python/3.7.0/Python-3.7.0.tgz
 tar -zxvf Python-3.7.0.tgz
 cd `echo Python-3.7.0.tgz |awk 'BEGIN{FS="/"}''{print $NF}'| awk -F".tgz" '{print $NR}'`

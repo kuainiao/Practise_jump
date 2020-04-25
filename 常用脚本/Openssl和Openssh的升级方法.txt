@@ -1,0 +1,69 @@
+第一步，升级OpenSSL
+####################################################################
+wget http://www.openssl.org/source/openssl-1.0.2j.tar.gz
+tar -xzvf openssl-1.0.2j.tar.gz
+cd openssl-1.0.2j
+./config --prefix=/usr/local/openssl shared zlib
+make && make install
+echo "export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/openssl/lib" >> /etc/profile
+source /etc/profile
+mv /usr/bin/openssl  /usr/bin/openssl.old
+mv /usr/include/openssl  /usr/include/openssl.old
+ln -s /usr/local/openssl/bin/openssl  /usr/bin/openssl
+ln -s /usr/local/openssl/include/openssl  /usr/include/openssl
+ln -s /usr/local/openssl/lib/libssl.so /usr/local/lib64/libssl.so
+strings /usr/local/lib64/libssl.so |grep OpenSSL
+echo "/usr/local/openssl/lib" >> /etc/ld.so.conf
+ldconfig /etc/ld.so.conf
+ldconfig -v
+####################################################################
+
+
+第二步，升级OpenSSH
+####################################################################
+# 2.1  备份
+
+mv /usr/lib/systemd/system/sshd.service{,_bak}
+systemctl daemon-reload
+mv /usr/sbin/sshd{,_bak}
+mv /usr/bin/sshd{,_bak}
+mv /usr/bin/scp{,_bak}
+mv /usr/bin/sftp{,_bak}
+mv /usr/bin/ssh-add{,_bak}
+mv /usr/bin/ssh-agent{,_bak}
+mv /usr/bin/ssh-keygen{,_bak}
+mv /usr/bin/ssh-keyscan{,_bak}
+
+# 2.2 下载上传openssh升级包
+
+wget https://openbsd.hk/pub/OpenBSD/OpenSSH/portable/openssh-8.2p1.tar.gz
+
+# 2.3 安装依赖库
+
+yum install -y zlib-devel openssl-devel gcc gcc-c++ make
+
+# 2.4 解压编译
+tar -xzvf openssh-8.2p1.tar.gz
+cd openssh-8.2p1/
+ ./configure --prefix=/usr/ --sysconfdir=/etc/ssh/ --with-ssl --with-md5-passwords mandir=/usr/share/man/
+rpm -e `rpm -qa |grep openssh`
+chmod -R 400 /etc/ssh/
+make && make install
+
+rm -f /etc/ssh/ssh_host_*  
+yes | cp contrib/redhat/sshd.init /etc/init.d/sshd
+查找sshd.pid的位置：find / -name sshd.pid
+修改配置文件/etc/init.d/sshd的“PID_FILE=/run/sshd.pid”
+cat > /etc/ssh/sshd_config <<EOF
+HostKey /etc/ssh/ssh_host_rsa_key
+HostKey /etc/ssh/ssh_host_dsa_key
+KexAlgorithms diffie-hellman-group1-sha1
+PermitRootLogin no
+AuthorizedKeysFile      .ssh/authorized_keys
+Subsystem       sftp    /usr/libexec/sftp-server
+Protocol 2
+EOF
+
+# 2.5 重启ssh服务
+systemctl daemon-reload
+/etc/init.d/sshd restart

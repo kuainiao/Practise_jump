@@ -2,6 +2,45 @@ Nginx开源可视化工具：https://github.com/onlyGuo/nginx-gui
 搭建流程：https://leanote.zzzmh.cn/blog/post/admin/%E8%BF%90%E7%BB%B4%E5%A4%A7%E6%9D%80%E5%99%A8%EF%BC%81Nginx%E5%8F%AF%E8%A7%86%E5%8C%96%E7%9B%91%E6%8E%A7%E7%AE%A1%E7%90%86%E9%A1%B5%E9%9D%A2%EF%BC%81
 
 1，普通安装，开监控模块
+2，非root用户启动时，必须定义端口到1024以上，要对nginx授权：chown -R nginx:nginx /usr/local/nginx
+
+初始化Nginx配置文件
+#########################################
+worker_processes  1;
+error_log  logs/error.log;
+events {
+    worker_connections  1024;
+}
+http {
+    include       mime.types;
+    default_type  application/octet-stream;
+    log_format  main  '$remote_addr - $remote_user [$time_local] "$request"' '$status $body_bytes_sent "$http_referer"' '"$http_user_agent" "$http_x_forwarded_for"';
+    server_tokens off;
+    autoindex off;
+    sendfile        on;
+    keepalive_timeout  5 5;
+    client_body_timeout 10;
+    client_header_timeout 10;
+    send_timeout 10;
+    limit_conn_zone $binary_remote_addr zone=one:10m;
+    server {
+        listen       8091;
+        server_name  localhost;
+        location / {
+            root   html;
+            index  index.html index.htm; 
+        }
+        location /nginx_status {
+            stub_status on;
+        }
+        error_page  404              /50x.html;
+        error_page   500 502 503 504  /50x.html;
+        location = /50x.html {
+            root   html;
+        }
+    }
+}
+###########################################
 
 yum install -y patch openssl pcre pcre-devel make cmake gcc gcc-c++ gcc-g77 flex bison file libtool libtool-libs autoconf kernel-devel libjpeg libjpeg-devel libpng libpng-devel libpng10 libpng10-devel gd gd-devel freetype freetype-devel libxml2 libxml2-devel zlib zlib-devel glib2 glib2-devel bzip2 bzip2-devel libevent libevent-devel ncurses ncurses-devel curl curl-devel e2fsprogs e2fsprogs-devel krb5 krb5-devel libidn libidn-devel openssl openssl-devel vim-minimal nano fonts-chinese gettext gettext-devel ncurses-devel gmp-devel pspell-devel unzip libcap diffutils
 wget http://ftp.cs.stanford.edu/pub/exim/pcre/pcre-8.38.tar.gz

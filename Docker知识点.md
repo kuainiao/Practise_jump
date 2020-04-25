@@ -86,15 +86,15 @@ docker build -t="luyanjie/test:v3" .
 限制内存：-m 300M 
 
 10，docker加速：
-创建daemon.json文件
-vi /etc/docker/daemon.json
-在文件内容加入：
+sudo mkdir -p /etc/docker
+cat >/etc/docker/daemon.json <<EOF
 {
-    "registry-mirrors": ["http://f1361db2.m.daocloud.io"]
+  "registry-mirrors": ["https://ot7dvptd.mirror.aliyuncs.com"]
 }
-重启docker
-systemctl daemon-reload
-systemctl restart docker
+EOF
+sudo systemctl daemon-reload
+sudo systemctl restart docker
+
 执行下面的命令
 curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://f1361db2.m.daocloud.io
 重启docker服务
@@ -200,6 +200,8 @@ sudo chmod +x /usr/local/bin/docker-compose
 curl -L https://raw.githubusercontent.com/docker/compose/1.13.0/contrib/completion/bash/docker-compose > /etc/bash_completion.d/docker-compose
 
 Docker运行Nginx：
-  304  docker pull nginx:latest
-  305  docker run --name nginx-test -p 8880:80 -d nginx
-  306  curl http://127.0.0.1:8880
+docker pull nginx:latest
+docker run --name nginx-test -p 8880:80 -d nginx
+curl http://127.0.0.1:8880
+
+

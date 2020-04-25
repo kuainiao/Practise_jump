@@ -18,7 +18,7 @@ yum install -y wget net-tools git
 # 4，安装阿里源：
 # yum源换阿里源
 mkdir -p /etc/yum.repos.d/defaul
-cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/default
+yes |cp /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/default
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 sed -i  's/$releasever/7/g' /etc/yum.repos.d/CentOS-Base.repo
 yum clean all
@@ -36,10 +36,11 @@ yum update -y
 
 # 6，关闭防火墙
 setenforce 0
-vi /etc/selinux/config
-
+sed -i -e '/SELINUX=enforcing/d' /etc/selinux/config
+sed -i -e '/SELINUXTYPE=targeted/d' /etc/selinux/config
+cat >> /etc/selinux/config << EOF
 SELINUX=disabled
-#SELINUXTYPE=targeted
+EOF
 
 systemctl stop firewalld
 systemctl disable firewalld

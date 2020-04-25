@@ -1,0 +1,76 @@
+yum -y install wget gcc gcc-c++ ncurses ncurses-devel cmake numactl.x86_64 libaio
+
+# 下载安装包并上传
+wget http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.7/mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz
+
+tar -zxvf mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz -C /usr/local/
+mv /usr/local/mysql-5.7.29-linux-glibc2.12-x86_64/ /usr/local/mysql
+cd /usr/local/mysql/
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+cat >/etc/my.cnf <<EOF
+[client]
+port=3318
+socket=/tmp/mysql.sock
+[mysqld]
+port=3318
+socket=/tmp/mysql.sock
+skip-external-locking
+key_buffer_size = 38M
+max_allowed_packet = 1M
+table_open_cache = 64
+sort_buffer_size = 512K
+net_buffer_length = 8K
+read_buffer_size = 256K
+read_rnd_buffer_size = 512K
+myisam_sort_buffer_size = 8M
+basedir=/usr/local/mysql
+datadir=/var/lib/mysql
+bind-address=0.0.0.0
+innodb_flush_log_at_trx_commit=1
+sync_binlog=1
+log-bin=/var/lib/mysql/mysql_logbin
+log-error=/var/log/mariadb
+slow_query_log =1
+slow_query_log_file=/tmp/mysql_slow.log
+server-id=1
+symbolic-links=0
+[mysqld_safe]
+pid-file=/var/run/mariadb/mariadb.pid
+EOF
+
+useradd mysql
+mkdir -p /usr/local/mysql/data
+chown mysql:mysql /usr/local/mysql/data
+mkdir -p /var/lib/mysql
+chown mysql:mysql /var/lib/mysql
+mkdir -p /var/log/mariadb
+chown mysql:mysql /var/log/mariadb/
+touch /var/log/mariadb/mariadb.log
+mkdir -p /var/run/mariadb
+chown mysql:mysql /var/run/mariadb/
+touch /var/run/mariadb/mariadb.pid
+mv /var/lib/mysql/ /var/lib/mysql_bak/
+cat  >> /etc/profile << EOF
+export PATH=\$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
+EOF
+source /etc/profile
+mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
+/etc/init.d/mysql start
+
+firewall-cmd --zone=public --add-port=3318/tcp --permanent
+firewall-cmd --reload
+
+mysql -u root -p 
+########################################
+# 修改本地root用户密码
+update mysql.user set authentication_string=password('ADSHgyu@12') where user='root' and Host = 'localhost';
+flush privileges;
+# 创建用户
+create user 'ityym'@'%' identified by 'ADSHgyu@12';
+grant replication slave on *.* to 'ityym'@'%' identified by 'ADSHgyu@12';
+# 创建数据库并授权
+CREATE DATABASE `ityym` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON o2oa.* TO 'ityym'@'%' identified by 'ADSHgyu@12' with grant option;
+flush privileges;
+########################################
+、

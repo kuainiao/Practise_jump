@@ -1,0 +1,38 @@
+2f848851-e46a3bfa7-c7e5-5c2256f54d14
+
+下载地址：https://www.finebi.com/product/download
+
+安装方法：https://help.finebi.com/doc-view-260.html?hmsr=download&hmpl=&hmcu=&hmkw=&hmci=
+
+帮助手册：https://help.finebi.com/
+
+wget https://fine-build.oss-cn-shanghai.aliyuncs.com/finebi/5.1/public/exe/spider/linux_unix_FineBI5_1-CN.sh
+
+chmod 777 linux_unix_FineBI5_1-CN.sh
+
+./linux_unix_FineBI5_1-CN.sh
+
+我接受协议
+是 [1], 否 [2]
+
+请选择在哪里安装 FineBI？
+[/opt/FineBI5.1]
+
+最大内存单位(M),最低2048M
+最大jvm内存：
+[3910]
+2048
+
+是否创建快捷连接？
+是 [y, 回车键], 否 [n]
+n
+
+添加桌面快捷方式?
+是 [y, 回车键], 否 [n]
+n
+
+访问：http://IP:37799/webroot/decision
+
+cat > /etc/rc.local <<EOF
+nohup /opt/FineBI5.1/bin/finebi &
+EOF

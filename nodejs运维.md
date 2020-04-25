@@ -2,8 +2,8 @@ Nodejs部署
 
 # Node 官网已经把 linux 下载版本更改为已编译好的版本了，我们可以直接下载解压后使用：
 wget https://npm.taobao.org/mirrors/node/v10.16.0/node-v10.16.0-linux-x64.tar.gz  # 下载
-tar xf  node-v10.16.0-linux-x64.tar.gz       # 解压
-cd node-v10.16.0-linux-x64/                  # 进入解压目录
+tar xf  node-v10.16.0-linux-x64.tar.gz -C /usr/local      # 解压
+mv /usr/local/node-v10.16.0-linux-x64  /usr/local/node               # 进入解压目录
 cat >> /etc/profile <<EOF
 export node_HOME=/usr/local/node
 export PATH=\$PATH:\$node_HOME/bin
