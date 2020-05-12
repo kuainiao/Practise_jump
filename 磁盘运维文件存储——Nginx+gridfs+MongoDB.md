@@ -3,9 +3,9 @@
 2，分成三个逻辑区，每个1G：fdisk /dev/sdb  n->p->+1G>t>8e->w
 3，变成lvm逻辑卷：yum install -y lvm2 ； pvcreate /dev/sdb1；pvcreate /dev/sdb2；pvcreate /dev/sdb3
 4，vgcreate vg2 /dev/sdb1 /dev/sdb2 /dev/sdb3
-5，新建分区
-lvcreate -L 100M -n lv1 vg1
-mkfs.ext4 /dev/vg1/lv1
+#5，新建分区
+#lvcreate -L 100M -n lv1 vg1
+mkfs.ext4 /dev/sdb2
 mount /dev/vg1/lv1 /mnt
 6，扩容操作
 umount /mnt

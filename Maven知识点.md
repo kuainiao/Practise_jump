@@ -31,7 +31,7 @@ eval $pid
 pid="sed -i '/export CLASSPATH/d' /etc/profile"
 eval $pid
 cat >> /etc/profile <<EOF
-export JAVA_HOME=/usr/java/jdk1.8.0_202-amd64
+export JAVA_HOME=/usr/local/jdk1.8.0_152
 export CLASSPATH=%JAVA_HOME%/lib:%JAVA_HOME%/jre/lib
 export PATH=\$PATH:\$JAVA_HOME/bin
 EOF

@@ -1,17 +1,17 @@
-tar xzvf mongodb-linux-x86_64-rhel70-3.4.21-rc0.tgz -C /usr/local/
-cd /usr/local
+tar xzvf mongodb-linux-x86_64-rhel70-3.4.21-rc0.tgz -C /data/mongodb/
+cd /data/mongodb
 mv mongodb-linux-x86_64-rhel70-3.4.21-rc0 mongodb
 cd mongodb
 mkdir data 
 mkdir log
 mkdir etc
 chown -R 777 data log etc
-touch /usr/local/mongodb/log/mongo.log
-chown -R 777 /usr/local/mongodb/log/mongo.log
+touch /data/mongodb/mongodb/log/mongo.log
+chown -R 777 /data/mongodb/mongodb/log/mongo.log
 cd etc/
-cat > /usr/local/mongodb/etc/mongodb.conf << EOF
-dbpath=/usr/local/mongodb/data
-logpath=/usr/local/mongodb/log/mongo.log
+cat > /data/mongodb/mongodb/etc/mongodb.conf << EOF
+dbpath=/data/mongodb/mongodb/data
+logpath=/data/mongodb/mongodb/log/mongo.log
 logappend=true
 journal=true
 quiet=true
@@ -20,8 +20,8 @@ port=20000
 auth=true
 bind_ip = 0.0.0.0
 EOF
-/usr/local/mongodb/bin/mongod -f /usr/local/mongodb/etc/mongodb.conf
-/usr/local/mongodb/bin/mongo --port=20000
+/data/mongodb/mongodb/bin/mongod -f /data/mongodb/mongodb/etc/mongodb.conf
+/data/mongodb/mongodb/bin/mongo --port=20000
 use admin
 db.createUser({user:"useradmin",pwd:"Aa12345678",roles:[{role:"userAdminAnyDatabase",db:"admin"}]})
 
@@ -40,7 +40,7 @@ quiet=true
 
 4，导出备份： mongodump -h 127.0.0.1:20000 -u "useradmin2" -p "123456" -d dxdb -o /tmp/
 
-5，导入备份：/usr/local/mongodb/bin/mongorestore -h 127.0.0.1:20000 -u "useradmin2" -p "123456" -d dxdb --dir /root/aomm
+5，导入备份：/data/mongodb/mongodb/bin/mongorestore -h 127.0.0.1:20000 -u "useradmin2" -p "123456" -d dxdb --dir /root/aomm
 
 6，创建管理员用户：
 use admin
@@ -48,7 +48,7 @@ db.createUser({user:"useradmin",pwd:"123456",roles:[{role:"userAdminAnyDatabase"
 db.auth("useradmin","123456")
 
 查询角色权限：db.system.users.find()
-授予角色权限：db.grantRolesToUser( "admin" , [ { role: "root", db: "admin" } ])
+授予角色权限：db.grantRolesToUser( "useradmin" , [ { role: "root", db: "admin" } ])
 取校角色权限：db.revokeRolesFromUser( "admin" , [ { role: "root", db: "admin" } ]
 
 7，必定要先用admin库管理员登陆，创建普通用户：
@@ -58,7 +58,7 @@ use my1
 db.createUser({user:"useradmin2",pwd:"123456",roles:[{role:"root",db:"dxdb"}]})
 
 8，带用户名密码登陆：
-/usr/local/mongodb/bin/mongo --port=20000 -u "useradmin2" -p "123456" --authenticationDatabase "admin"
+/data/mongodb/mongodb/bin/mongo --port=20000 -u "useradmin2" -p "123456" --authenticationDatabase "admin"
 
 ################################
 Read：允许用户读取指定数据库

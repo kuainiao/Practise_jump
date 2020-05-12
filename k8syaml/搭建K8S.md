@@ -1,10 +1,10 @@
 
-hostnamectl set-hostname guilinface
+hostnamectl set-hostname k8smaster
 echo "127.0.0.1   $(hostname)" >> /etc/hosts
 export REGISTRY_MIRROR=https://registry.cn-hangzhou.aliyuncs.com
 curl -sSL https://kuboard.cn/install-script/v1.18.x/install_kubelet.sh | sh -s 1.18.0
 export MASTER_IP=192.168.0.224
-export APISERVER_NAME=apiserver.guilinface
+export APISERVER_NAME=apiserver.k8smaster
 export POD_SUBNET=10.100.0.1/16
 echo "${MASTER_IP}    ${APISERVER_NAME}" >> /etc/hosts
 curl -sSL https://kuboard.cn/install-script/v1.18.x/init_master.sh | sh -s 1.18.0

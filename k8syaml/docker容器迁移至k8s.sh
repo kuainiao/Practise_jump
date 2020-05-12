@@ -41,7 +41,7 @@ docker pull registry
 mkdir -p /opt/auth
 docker run --entrypoint htpasswd registry:2 -Bbn liaochao 123456 > /opt/auth/htpasswd
 docker run -d -p 5000:5000 --restart=always --name registry1 \
--v `pwd`/auth:/auth \
+-v /opt/auth:/auth \
 -e "REGISTRY_AUTH=htpasswd" \
 -e "REGISTRY_AUTH_HTPASSWD_REALM=Registry Realm" \
 -e REGISTRY_AUTH_HTPASSWD_PATH=/auth/htpasswd \

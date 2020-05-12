@@ -1,10 +1,19 @@
 https://www.jianshu.com/p/a024dc5ade92
 http://blog.chinaunix.net/uid-26168435-id-5736568.html
 
+安装 Racher
+docker run -d --restart=unless-stopped -p 8082:8080 rancher/server
+docker run --rm --privileged -v /var/run/docker.sock:/var/run/docker.sock -v /var/lib/rancher:/var/lib/rancher rancher/agent:v1.2.11 http://118.89.23.220:8082/v1/scripts/AE5BDE446FD8E656A2EC:1577750400000:BnDz9JSppql6GPmNyQFjTpVTGg
+
+安装 Racher K8s
+docker run -d --restart=unless-stopped -p 888:80 -p 4432:443 rancher/rancher:stable
+
 # 1，安装Docker（K8s master和K8s node1执行）
 yum -y update
 yum install -y wget
-yum install -y yum-utils device-mapper-persistent-data lvm2
+yum install -y yum-
+
+utils device-mapper-persistent-data lvm2
 cd /etc/yum.repos.d/
 yum-config-manager --add-repo https://mirrors.aliyun.com/docker-ce/linux/centos/docker-ce.repo
 yum -y install docker-ce

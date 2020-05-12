@@ -77,6 +77,9 @@ flush privileges;
 CREATE DATABASE `test_aomm_2020` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
 GRANT ALL PRIVILEGES ON test_aomm_2020.* TO 'dxops'@'%' IDENTIFIED BY 'dx2018' with grant option;
 flush privileges;
+CREATE DATABASE `test_aomm_2020` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
+GRANT ALL PRIVILEGES ON test_aomm_2020.* TO 'dxops'@'%' IDENTIFIED BY 'dx2018' with grant option;
+flush privileges;
 ##################################################################
 
 # 1，非交互式命令创建dog用户：mysql -h127.0.0.1 -P3306 -uroot -p123456 -e "SHOW VARIABLES LIKE 'validate_password%';" 2>/dev/null

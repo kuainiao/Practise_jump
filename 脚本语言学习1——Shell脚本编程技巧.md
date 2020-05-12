@@ -79,7 +79,7 @@ awk  ————行运算命令
 
 14，生成随机密码工具mkpasswd：
 #  yum -y install expect
-# mkpasswd -l 15 -d 3 -C 5  #  生成长度15  至少3个数字  5个大写字母
+#  mkpasswd -l 15 -d 3 -C 5  #  生成长度15  至少3个数字  5个大写字母
 #  生成Linux密码的8种方法：https://linux.cn/article-9318-1.html
 
 15，后台运行程序不占用终端并记录运行日志： nohup  sh test.sh  &
@@ -325,6 +325,12 @@ do
     num=`expr $num + 1`
 done  
 
+50，遍历命令输出多行：
+diskname=`fdisk -l | grep "Disk" |grep "sectors" | awk '{print $2}' | sed 's/://g'`
+for  disk_name  in  ${diskname[*]}
+do
+    diskuuid=$diskuuid`blkid $disk_name | grep -v "PTTYPE" | awk '{print $2}' | sed 's/UUID="//g'| sed 's/"//g'`","
+done
 
 *******************   12，yum下载本地依赖包
 yum install --downloadonly --downloaddir=/root/  boost-devel.x86_64
@@ -638,3 +644,16 @@ hclock -w
 2，检测密码过期时间：chage -l root | grep "Password expires" | awk -F ": " '{ print $2 }'
 3，查看root用户过期时间：chage -l root
 4，设置密码有效期：chage -d 0 -m 0 -M 180 -W 15 root
+
+linux查看内核信息：  lsmod
+
+sar命令查看系统瓶颈和历史负载：
+https://shockerli.net/post/linux-tool-sar/#i-o-%E5%92%8C%E4%BC%A0%E8%BE%93%E9%80%9F%E7%8E%87%E4%BF%A1%E6%81%AF%E7%8A%B6%E5%86%B5
+
+22，查看网络端口连接情况：netstat -an
+
+23，替换回车符
+
+查看用户密码最小长度：cat /etc/login.defs| grep -Ev "^$|#" | grep PASS_MIN_LEN
+
+24，以日期命名文件： /etc/rsyslog.conf.$(date +%F)

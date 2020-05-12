@@ -1,0 +1,1 @@
+select count(*) from test_aomm_2020.t_operation_task where task_area like '09%' and (task_create_time between  '2020-04-01 00:00:00' and '2020-04-30 23:59:59');

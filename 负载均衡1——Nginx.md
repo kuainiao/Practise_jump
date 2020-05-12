@@ -2,7 +2,7 @@ Nginx开源可视化工具：https://github.com/onlyGuo/nginx-gui
 搭建流程：https://leanote.zzzmh.cn/blog/post/admin/%E8%BF%90%E7%BB%B4%E5%A4%A7%E6%9D%80%E5%99%A8%EF%BC%81Nginx%E5%8F%AF%E8%A7%86%E5%8C%96%E7%9B%91%E6%8E%A7%E7%AE%A1%E7%90%86%E9%A1%B5%E9%9D%A2%EF%BC%81
 
 1，普通安装，开监控模块
-2，非root用户启动时，必须定义端口到1024以上，要对nginx授权：chown -R nginx:nginx /usr/local/nginx
+2，非root用户启动时，必须定义端口到1024以上，要对nginx授权：chown -R nginx:nginx /data/nginx
 
 初始化Nginx配置文件
 #########################################
@@ -49,13 +49,13 @@ userdel www
 groupdel www
 groupadd -f www
 useradd -g www www
-tar zxvf pcre-8.38.tar.gz -C /usr/local/
-tar zxvf nginx-1.14.2.tar.gz -C /usr/local/
-cd  /usr/local/nginx-1.14.2/
-./configure --user=www --group=www --prefix=/usr/local/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module --with-pcre=/usr/local/pcre-8.38/ --with-pcre-jit
+tar zxvf pcre-8.38.tar.gz -C /data/
+tar zxvf nginx-1.14.2.tar.gz -C /data/
+cd  /data/nginx-1.14.2/
+./configure --user=www --group=www --prefix=/data/nginx --with-http_stub_status_module --with-http_ssl_module --with-http_gzip_static_module --with-ipv6 --with-http_sub_module --with-pcre=/data/pcre-8.38/ --with-pcre-jit
 make && make install
 
-vi /usr/local/nginx/conf/nginx.conf 
+vi /data/nginx/conf/nginx.conf 
 ##################################################
 location /nginx_status {
     stub_status on;
@@ -68,11 +68,11 @@ yum -y install pcre-devel openssl-devel zlib-devel git gcc gcc-c++
 tar -xzvf nginx-1.14.2.tar.gz
 tar -xvf nginx-gridfs.tar.gz
 cd nginx-1.14.2
-./configure --prefix=/usr/local/nginx   --with-openssl=/usr/include/openssl --add-module=/data/soft/nginx_mongodb/nginx-gridfs
+./configure --prefix=/data/nginx   --with-openssl=/usr/include/openssl --add-module=/data/soft/nginx_mongodb/nginx-gridfs
 vi objs/Makefile  # 去掉-Werror
 make -j8 && make install -j8
 
-vi /usr/local/nginx/conf/nginx.conf 
+vi /data/nginx/conf/nginx.conf 
 ##################################################
 server {
         listen       800;
@@ -118,7 +118,7 @@ curl http://127.0.0.1/
 ./nginx -s reload
 
 6，Nginx制定配置文件启动：
-./sbin/nginx -c /usr/local/nginx/conf/nginx.conf
+./sbin/nginx -c /data/nginx/conf/nginx.conf
 
 7，判断配置文件是否有错：
 nginx -t -c /usr/nginx/conf/nginx.conf
