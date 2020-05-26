@@ -7,10 +7,10 @@ cd /usr/local/mysql/
 cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
 cat >/etc/my.cnf <<EOF
 [client]
-port=3318
+port=3306
 socket=/tmp/mysql.sock
 [mysqld]
-port=3318
+port=3306
 socket=/tmp/mysql.sock
 skip-external-locking
 key_buffer_size = 38M
@@ -111,7 +111,7 @@ skip-name-resolve
 [mysqld]
 skip-grant-tables
 # 17，更新root用户密码
-update mysql.user set authentication_string=password('qwer1234') where user='root' and Host = 'localhost';
+update mysql.user set authentication_string=password('123456') where user='root' and Host = 'localhost';
 flush privileges;
 # 设置mysql root密码：
 alter user 'root'@'localhost' identified by 'Root!!2018';  

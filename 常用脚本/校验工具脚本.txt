@@ -1,0 +1,5 @@
+@echo off
+cd C:\Program Files\Microsoft SQL Server\MSSQL11.SQLEXPRESS\MSSQL\Binn
+del D:\inetpub\in.txt
+echo INSERT INTO [BaseDataGovernance_new].[dbo].[UserInfo] ([Id],[Account],[UserName],[PassWord],[State],[Remark],[UpdateTime],[Comment]) VALUES ('131','testios1','测试','0xe5fd4b7cc920fe3e2c620e477995b586',1,'','2019-07-24 11:11:11','测试');> D:\inetpub\in.txt
+OSQL -S VS-IOS-SJJY01\SQLEXPRESS -U sjjy -P Aa12345678 < D:\inetpub\in.txt

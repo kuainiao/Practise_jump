@@ -1,0 +1,8 @@
+1，备份数据库：sqlcmd -E -S VS-\SQLEXPRESS
+ -Q "BACKUP DATABASE [BaseDataGovernance_new] TO DISK = "E:\inetpub\aa.bak"
+2，还原数据库：sqlcmd -E -S VS-\SQLEXPRESS
+ -Q "RESTORE DATABASE [BaseDataGovernance_new] FROM DISK = "E:\inetpub\aa.bak"
+3，免密执行SQL：echo INSERT INTO [BaseDataGovernance_new].[dbo].[UserInfo] ([Id],[Account],[UserName],[PassWord],[State],[Remark],[UpdateTime],[Comment]) VALUES ('131','testios1','测试','0xe5fd4b7cc920fe3e2c620e477995b586',1,'','2019-07-24 11:11:11','测试');> D:\inetpub\in.sql
+            OSQL -S VS-IOS-SJJY01\SQLEXPRESS -U sjjy -P Aa12345678 < D:\inetpub\in.sql
+
+

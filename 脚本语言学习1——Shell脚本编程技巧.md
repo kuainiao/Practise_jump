@@ -592,6 +592,8 @@ crontab /tmp/crontab.bak
 yum install -y mailx
 cat >> /etc/mail.rc <<EOF
 ####################################
+set bsdcompat
+set smtp-use-starttls 
 set from="1290851757@qq.com"
 set smtp="smtps://smtp.qq.com:465"
 set smtp-auth-user="1290851757@qq.com"
@@ -602,7 +604,7 @@ set nss-config-dir=/etc/pki/nssdb
 ####################################
 EOF
 
-echo '邮件内容' | mail -s '邮件标题' 1755337994@qq.com
+echo "邮件内容" | mail -v -q -s "邮件标题" -r 1290851757@qq.com -S smtp-auth=login -S smtps://smtp.qq.com:465 -S smtp-auth-user="1290851757@qq.com" -S smtp-auth-password="nzqygrzwccgpiejb" 1755337994@qq.com
 
 13，是否包含子字符串：
 strA="long string"

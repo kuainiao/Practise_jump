@@ -6,13 +6,27 @@ S3 radosgw-admin操作：https://www.cnblogs.com/kuku0223/p/8257813.html
 S3 s3cmd操作：https://blog.frognew.com/2017/02/using-s3-access-ceph-rgw.html
 多地容灾情景：
 
-节点	    Hostname	IP地址	            属性
-Deploy节点	ceph-admin    192.168.182.155	    ceph-admin
-OSD节点1  	ceph-node1	  192.168.182.207	    ceph-node1
-OSD节点2  	ceph-node2	  192.168.182.208	    ceph-node2
+# 环境：
+# 管理节点：CentOS-7  50G+200G硬盘  内存、CPU随意
+# OSD节点：CentOS-7  50G+200G硬盘  内存、CPU随意
 
-mkdir -p /etc/yum.repos.d/bak
-mv /etc/yum.repos.d/*.repo /etc/yum.repos.d/bak
+节点	    Hostname	IP地址	            属性
+Deploy节点	ceph-admin    192.168.225.194	    ceph-admin
+OSD节点1  	ceph-node1	  192.168.225.193	    ceph-node1
+
+# yum换上扩展源
+yum install -y wget
+wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
+sed -i  's/$releasever/7/g' /etc/yum.repos.d/CentOS-Base.repo
+wget -P /etc/yum.repos.d/ http://mirrors.aliyun.com/repo/epel-7.repo
+yum clean all
+yum makecache
+yum install -y epel-release
+
+yum -y install python-pip
+pip install --upgrade pip
+yum install -y ceph-deploy
+
 cat > /etc/yum.repos.d/local.repo << EOF
 [Ceph-SRPMS]
 name=Ceph SRPMS packages
@@ -39,20 +53,14 @@ enabled=1
 gpgcheck=0
 EOF
 
-# yum换上扩展源
-wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
-sed -i  's/$releasever/7/g' /etc/yum.repos.d/CentOS-Base.repo
-wget -P /etc/yum.repos.d/ http://mirrors.aliyun.com/repo/epel-7.repo
-yum clean all
-yum makecache
-yum install epel-release
+
 
 # rpm --import /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 yum clean all
-yum install -y ceph-deploy --no-adjust-repos
+yum install -y ceph
 yum install -y ceph-fuse --no-adjust-repos
 yum install -y ceph-radosgw --nogpgcheck
-yum install -y ceph --no-adjust-repos
+ 
 
 
 # 每个节点修改
@@ -62,8 +70,8 @@ hostnamectl set-hostname ceph-node2
 
 # 所有节点
 cat >> /etc/hosts << EOF
-192.168.182.155    ceph-admin
-192.168.182.207    ceph-node1 
+192.168.225.194    ceph-admin
+192.168.225.193    ceph-node1 
 192.168.182.208    ceph-node2
 EOF
 systemctl stop firewalld
@@ -156,7 +164,7 @@ mkdir /cephfs
 cd /cephfs
 vi /etc/ceph/ceph.conf
 vi /etc/ceph/ceph.client.admin.keyring
-ceph-fuse -m 192.168.182.155:6789 /cephfs
+ceph-fuse -m 192.168.225.194:6789 /cephfs
 
 # admin节点执行
 su - cephuser
@@ -254,7 +262,7 @@ secret_key = 'szc97KONbVN22BSf4iMCSih2Cy7YQlibqLXTZLSp'
 conn = boto.connect_s3(
         aws_access_key_id = access_key,
         aws_secret_access_key = secret_key,	
-        host = '192.168.182.207',
+        host = '192.168.225.193',
         port = 7480,
         is_secure=False,
         calling_format = boto.s3.connection.OrdinaryCallingFormat(),

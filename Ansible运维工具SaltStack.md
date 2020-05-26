@@ -2,11 +2,21 @@
 
 # Ansible搭建博客：https://www.cnblogs.com/gzxbkk/p/7515634.html
 
+# 配置阿里扩展源
 wget -O /etc/yum.repos.d/CentOS-Base.repo http://mirrors.aliyun.com/repo/Centos-7.repo
 sed -i  's/$releasever/7/g' /etc/yum.repos.d/CentOS-Base.repo
 wget -P /etc/yum.repos.d/ http://mirrors.aliyun.com/repo/epel-7.repo
 yum clean all
 yum makecache
+
+# ntp时间同步
+yum install -y ntpdate
+yes | cp -f /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
+ntpdate us.pool.ntp.org
+date
+crontab -l >/tmp/crontab.bak
+echo "*/10 * * * * /usr/sbin/ntpdate us.pool.ntp.org | logger -t NTP" >> /tmp/crontab.bak
+crontab /tmp/crontab.bak
 
 yum install -y ansible
 

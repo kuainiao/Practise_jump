@@ -22,11 +22,11 @@ python -m pip install --upgrade pip
 python get-pip.py
 pip install --upgrade pip
 
-豆瓣pip 安装加速：pip install -i http://pypi.douban.com/simple --trusted-host pypi.douban.com tensorflow
+豆瓣pip 安装加速：pip install -i http://pypi.douban.com/simple --trusted-host pypi.douban.com jieba
 
 永久更换pip源：修改~/.pip/pip.conf文件，如果没有就创建一个，写入如下内容（以清华源为例）：
 mkdir -p ~/.pip/
-cat >> ~/.pip/pip.conf <<EOF
+cat > ~/.pip/pip.conf <<EOF
 [global]
 index-url = http://pypi.douban.com/simple
 [install]
@@ -56,3 +56,5 @@ EOF
 21，pip安装时报【fatal error: Python.h: No such file or directory compilation terminated】错误：
 sudo yum install python-devel   # for python2.x installs
 sudo yum install python34-devel   # for python3.4 installs
+22，Python写入txt文件：
+

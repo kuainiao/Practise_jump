@@ -1,0 +1,10 @@
+0，注释头：# -*- coding:utf-8 -*-
+1，获取输入变量：sys.argv[1]   #  从 1 开始
+2，与条件判断：if a < b and a_s < b_s:
+3，获取当前时间：from time import time,localtime,strftime  x=localtime(time())
+weekday=strftime("%A",x) # 周几  day=strftime("%d",x) # 日  month=strftime("%m",x) # 月  year=strftime("%Y",x) # 年
+4，判断每月天数：import calendar  monthRange = calendar.monthrange(2016,9)  print monthRange[1]
+5，获取昨日日期：import datetime today=datetime.date.today()  oneday=datetime.timedelta(days=1)  yesterday=today-oneday   print yesterday
+6，获取上周日期：import datetime  from datetime import timedelta  now = datetime.datetime.now()  last_week_start = now - timedelta(days=now.weekday()+7)  last_week_end = now - timedelta(days=now.weekday()+1)
+7，格式化日期成2020-01-05：import time  time.strftime('%Y-%m-%d',time.localtime(time.time()))
+
