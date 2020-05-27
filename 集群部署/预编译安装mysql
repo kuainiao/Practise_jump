@@ -55,6 +55,7 @@ export PATH=\$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
 EOF
 source /etc/profile
 mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
+mysqld --initialize --defaults-file=/etc/my.cnf  --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
 /etc/init.d/mysql start
 
 firewall-cmd --zone=public --add-port=3318/tcp --permanent
