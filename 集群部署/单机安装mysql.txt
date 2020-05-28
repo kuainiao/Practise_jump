@@ -63,7 +63,8 @@ firewall-cmd --reload
 mysql -u root -p 
 ########################################
 # 修改本地root用户密码
-update mysql.user set authentication_string=password('ADSHgyu@12') where user='root' and Host = 'localhost';
+update mysql.user set authentication_string=password('123456') where user='root' and Host = 'localhost';
+update mysql.user set authentication_string=password('123456') where user='root';
 flush privileges;
 # 创建用户
 create user 'ityym'@'%' identified by 'ADSHgyu@12';
