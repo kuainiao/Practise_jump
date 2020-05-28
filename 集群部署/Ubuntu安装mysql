@@ -94,14 +94,14 @@ firewall-cmd --reload
 mysql -u root -p 
 ########################################
 # 修改本地root用户密码
-update mysql.user set authentication_string=password('ADSHgyu@12') where user='root' and Host = 'localhost';
+update mysql.user set authentication_string=password('123456') where user='root' and Host = 'localhost';
 flush privileges;
 # 创建用户
-create user 'ityym'@'%' identified by 'ADSHgyu@12';
-grant replication slave on *.* to 'ityym'@'%' identified by 'ADSHgyu@12';
+create user 'dafei'@'%' identified by '123456';
+grant replication slave on *.* to 'dafei'@'%' identified by '123456';
 # 创建数据库并授权
 CREATE DATABASE `ityym` DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;
-GRANT ALL PRIVILEGES ON o2oa.* TO 'ityym'@'%' identified by 'ADSHgyu@12' with grant option;
+GRANT ALL PRIVILEGES ON o2oa.* TO 'dafei'@'%' identified by '123456' with grant option;
 flush privileges;
 ########################################
 、
