@@ -1,4 +1,10 @@
 sudo apt-get install wget gcc gcc-c++ ncurses ncurses-devel cmake numactl.x86_64 libaio
+sudo groupadd mysql
+sudo useradd -g mysql mysql
+apt-get install libaio1
+apt-get install numactl
+mkdir -p /etc/mysql
+mkdir /var/log/mysql
 
 # 下载安装包并上传
 wget http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.7/mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz
