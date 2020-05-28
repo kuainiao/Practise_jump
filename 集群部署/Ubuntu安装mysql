@@ -1,4 +1,4 @@
-yum -y install wget gcc gcc-c++ ncurses ncurses-devel cmake numactl.x86_64 libaio
+sudo apt-get install wget gcc gcc-c++ ncurses ncurses-devel cmake numactl.x86_64 libaio
 
 # 下载安装包并上传
 wget http://mirrors.ustc.edu.cn/mysql-ftp/Downloads/MySQL-5.7/mysql-5.7.29-linux-glibc2.12-x86_64.tar.gz
@@ -42,8 +42,8 @@ EOF
 chmod 664 /etc/my.cnf
 
 4、创建用户组和用户
-groupadd mysql
-useradd -r -g mysql -s /bin/false mysql
+sudo groupadd mysql
+sudo useradd -r -g mysql -s /bin/false mysql
 
 mkdir -p /usr/local/mysql/data
 chown mysql:mysql /usr/local/mysql/data
@@ -61,8 +61,8 @@ cat  >> /etc/profile << EOF
 export PATH=\$PATH:/usr/local/mysql/bin:/usr/local/mysql/lib
 EOF
 source /etc/profile
-mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
-mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
+sudo mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
+sudo mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
 
 cd /usr/local/mysql/
 cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
