@@ -41,7 +41,10 @@ EOF
 
 chmod 664 /etc/my.cnf
 
-useradd mysql
+4、创建用户组和用户
+groupadd mysql
+useradd -r -g mysql -s /bin/false mysql
+
 mkdir -p /usr/local/mysql/data
 chown mysql:mysql /usr/local/mysql/data
 mkdir -p /var/lib/mysql
