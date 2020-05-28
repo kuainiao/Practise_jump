@@ -1,4 +1,4 @@
-sudo apt-get install wget gcc gcc-c++ ncurses ncurses-devel cmake numactl.x86_64 libaio
+
 sudo groupadd mysql
 sudo useradd -g mysql mysql
 apt-get install libaio1
@@ -58,6 +58,7 @@ chown mysql:mysql /var/lib/mysql
 mkdir -p /var/log/mariadb
 chmod -R 777 /var/log/mariadb/
 chown mysql:mysql /var/log/mariadb/
+chown mysql:mysql /var/log/mariadb/*
 touch /var/log/mariadb/mariadb.log
 mkdir -p /var/run/mariadb
 chown mysql:mysql /var/run/mariadb/
@@ -71,7 +72,7 @@ sudo mysqld --defaults-file=/etc/my.cnf --user=mysql --initialize-insecure
 sudo mysqld --defaults-file=/etc/my.cnf --initialize-insecure --user=mysql --basedir=/usr/local/mysql --datadir=/usr/local/mysql/data
 
 cd /usr/local/mysql/
-cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysql
+cp /usr/local/mysql/support-files/mysql.server /etc/init.d/mysqld
 chmod +x /etc/init.d/mysqld
 chkconfig --add mysqld
 mysqld_safe --defaults-file=/etc/my.cnf &
